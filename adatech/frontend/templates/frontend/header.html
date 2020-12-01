@@ -1,0 +1,59 @@
+<head>
+    {% load static %}
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- Icon Library CSS -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <style>
+      .row{
+        height:1000px;
+      }
+    </style>
+
+    <style>
+      .center{
+        display: block;
+        margin-left:auto;
+        margin-right: auto;
+        width: 95%;
+      }
+      .align-center{
+        text-align: center;
+      }
+      .btn-file{
+        position:relative;
+        overflow: hidden;
+      }
+
+      .btn-file input[type=file]{
+        position: absolute;
+        top: 0;
+        right: 0;
+        min-width: 100%;
+        min-height: 100%;
+        font-size: 100px;
+        text-align: right;
+        filter: alpha(opacity=0);
+        opacity: 0;
+        outline: none;
+        background: white;
+        cursor: inherit;
+        display: block;
+      }
+    </style>
+</head>
+
+<body>
+
+  {% include "frontend/navbar.html" %}
+
+  {% block content %}
+
+  {% endblock %}
+
+</body>
+
+<script>M.AutoInit();</script>

@@ -1,0 +1,29 @@
+{% extends "frontend/header.html" %}
+
+{% load static %}
+
+{% block content %}
+<!--*TODO: Find something better than 10 br tags -->
+    <br><br><br><br><br><br><br><br>
+    <div class = "row">
+        <div class = "col s2 m1 l1"></div>
+        <div class = "col s12 m5 l5">
+            <h1 class = "header" style = "color: #0f3741;">Use Machine Learning algorithms with <strong>zero code</strong></h1>
+            <h5 class ="header col s12 light">Use data's power to the fullest with Ada</h5>
+            <br><br><br><br>
+            <div class = "row center">
+                <a onClick="handleButtonPressed()" class = "btn-large waves-effect waves-light" style = "background-color:#0f3741;">Get Started</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+      function handleButtonPressed() {
+        const requestOptions = {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+        };
+        fetch("/api/create-notebook", requestOptions).then((response) => response.json()).then((data) => console.log(data))
+      };
+    </script>
+{% endblock %}
