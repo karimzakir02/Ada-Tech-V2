@@ -5,4 +5,5 @@ urlpatterns = [
     # path("", home),
     # path("notebook/<str:notebookCode")
     path("", index),
+    path("notebook", index)
 ]
