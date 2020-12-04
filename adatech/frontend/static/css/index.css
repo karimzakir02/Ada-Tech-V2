@@ -4,9 +4,12 @@ html, body {
   padding: 0;
   /* color: white; */
 }
-
+div {
+  margin: 0;
+  padding: 0;
+}
 #main {
-  position: fixed;
+  position: relative;
   width: 100%;
   height: 100%;
   left: 0;
@@ -16,5 +19,20 @@ html, body {
 #app {
   width: 100%;
   height: 100%;
-  display: flex;
+  display: block;
+}
+.brand-color {
+  background-color: #0f3741;
+}
+
+.valign-wrapper {
+  min-height: calc(100vh - 30px);
+}
+
+.valign {
+}
+.navbar {
+  position: absolute;
+  top: 0;
+  left: 0;
 }

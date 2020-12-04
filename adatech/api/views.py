@@ -42,3 +42,5 @@ class GetNotebookView(APIView):
                 return Response(data, status=status.HTTP_200_OK)
             return Response({"Notebook not found": "Notebook does not exist"},
                             status=status.HTTP_404_NOT_FOUND)
+        return Response({"Bad Request": "Notebook id not found in request"},
+                        status=status.HTTP_400_BAD_REQUEST)

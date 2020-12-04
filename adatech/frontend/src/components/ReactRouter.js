@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import {render} from "react-dom";
-import NotebookPage from "./NotebookPage";
+import Notebook from "./Notebook";
 import HomePage from "./HomePage";
+import Navbar from "./Navbar";
 import {
   BrowserRouter as Router,
   Switch,
@@ -19,7 +20,7 @@ export default class ReactRouter extends Component {
       <Router>
         <Switch>
           <Route exact path="/" component={HomePage}/>
-          <Route path="/notebook" component={NotebookPage}/>
+          <Route path="/notebook/:id" component={Notebook}/>
         </Switch>
       </Router>
     );
