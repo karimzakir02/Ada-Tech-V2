@@ -28,6 +28,8 @@
 
 /*! export ContextProvider [provided] [no usage info] [provision prevents renaming (no use info)] -> ./node_modules/react-is/cjs/react-is.production.min.js .ContextProvider */
 
+/*! export DataframeOptions [provided] [no usage info] [missing usage info prevents renaming] */
+
 /*! export Element [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*! export Element [provided] [no usage info] [provision prevents renaming (no use info)] -> ./node_modules/react-is/cjs/react-is.production.min.js .Element */
@@ -49,6 +51,8 @@
 /*! export Lazy [provided] [no usage info] [provision prevents renaming (no use info)] -> ./node_modules/react-is/cjs/react-is.production.min.js .Lazy */
 
 /*! export Link [provided] [no usage info] [missing usage info prevents renaming] */
+
+/*! export MachineLearningOptions [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*! export Memo [provided] [no usage info] [missing usage info prevents renaming] */
 
@@ -80,6 +84,8 @@
 
 /*! export PureComponent [provided] [no usage info] [provision prevents renaming (no use info)] -> ./node_modules/react/cjs/react.production.min.js .PureComponent */
 
+/*! export RandomSamples [provided] [no usage info] [missing usage info prevents renaming] */
+
 /*! export Redirect [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*! export Redirect [provided] [no usage info] [missing usage info prevents renaming] -> ./node_modules/react-router/esm/react-router.js .Redirect */
@@ -97,6 +103,8 @@
 /*! export StaticRouter [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*! export StaticRouter [provided] [no usage info] [missing usage info prevents renaming] -> ./node_modules/react-router/esm/react-router.js .StaticRouter */
+
+/*! export StatisticsOptions [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*! export StrictMode [provided] [no usage info] [missing usage info prevents renaming] */
 
@@ -464,6 +472,10 @@
   !*** ./src/components/App.js ***!
   \*******************************/
 
+/*!*********************************!*\
+  !*** ./src/components/Trial.js ***!
+  \*********************************/
+
 /*!**********************************!*\
   !*** ./src/components/Navbar.js ***!
   \**********************************/
@@ -508,6 +520,10 @@
   !*** ./node_modules/prop-types/index.js ***!
   \******************************************/
 
+/*!********************************************!*\
+  !*** ./src/components/DataframeOptions.js ***!
+  \********************************************/
+
 /*!*********************************************!*\
   !*** ./node_modules/history/esm/history.js ***!
   \*********************************************/
@@ -516,9 +532,17 @@
   !*** ./node_modules/object-assign/index.js ***!
   \*********************************************/
 
+/*!*********************************************!*\
+  !*** ./src/components/StatisticsOptions.js ***!
+  \*********************************************/
+
 /*!**********************************************!*\
   !*** ./node_modules/path-to-regexp/index.js ***!
   \**********************************************/
+
+/*!**************************************************!*\
+  !*** ./src/components/MachineLearningOptions.js ***!
+  \**************************************************/
 
 /*!*****************************************************!*\
   !*** ./node_modules/value-equal/esm/value-equal.js ***!
@@ -531,6 +555,10 @@
 /*!********************************************************!*\
   !*** ./node_modules/react/cjs/react.production.min.js ***!
   \********************************************************/
+
+/*!***********************************************************!*\
+  !*** ./src/components/dataframe_options/RandomSamples.js ***!
+  \***********************************************************/
 
 /*!************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/esm/extends.js ***!

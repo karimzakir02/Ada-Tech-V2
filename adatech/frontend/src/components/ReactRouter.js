@@ -3,6 +3,7 @@ import {render} from "react-dom";
 import Notebook from "./Notebook";
 import HomePage from "./HomePage";
 import Navbar from "./Navbar";
+import Trial from "./Trial";
 import {
   BrowserRouter as Router,
   Switch,

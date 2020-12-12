@@ -1,15 +1,14 @@
 import React, { Component } from "react";
 import {render} from "react-dom";
+import DataframeOptions from "./DataframeOptions";
+import StatisticsOptions from "./StatisticsOptions";
+import MachineLearningOptions from "./MachineLearningOptions";
 
 export class Sidenav extends Component {
   constructor(props){
     super(props);
     }
-  tabs = document.getElementById("tabs");
 
-  handleTabsChange() {
-    console.log(tabs.options)
-  }
 
   // TODO: Try doing the below (switching tabs) using JS purely,
   // so that you don't get that annoying fucking url change each time
@@ -27,15 +26,13 @@ export class Sidenav extends Component {
             <div class = "col s12">
               <ul class = "brand-color tabs" id="tabs" onClick={this.handleTabsChange}>
                 <li class = "tab col s4"><a href="#dataframe" style = {{color: "white"}}>Data</a></li>
-                <li class = "tab col s4"><a href = "#graph" style = {{color: "white"}}>Statistics</a></li>
+                <li class = "tab col s4"><a href = "#statistics" style = {{color: "white"}}>Statistics</a></li>
                 <li class = "tab col s4"><a href = "#ml" style = {{color: "white"}}>Models</a></li>
               </ul>
             </div>
-            <div id="dataframe">
-              <li style={{marginLeft: "15px", paddingTop: "15px"}}>
-                <h4 class="white-text" style={{fontSize: "16pt"}}>Data Summary</h4>
-              </li>
-            </div>
+            <DataframeOptions />
+            <StatisticsOptions />
+            <MachineLearningOptions />
           </div>
         </ul>
       </div>

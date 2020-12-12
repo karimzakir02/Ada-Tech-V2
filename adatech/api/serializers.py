@@ -12,3 +12,9 @@ class CreateNotebookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notebook
         fields = ("author", "output")
+
+
+class GetFilePathSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notebook
+        fields = ("file_path")
