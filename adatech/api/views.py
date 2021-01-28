@@ -45,6 +45,8 @@ class GetNotebookView(APIView):
                 data["id"] = id
                 data["is_author"] = self.request.session.session_key == \
                     notebook[0].author
+                df_list = request.session.get("df_list", [])
+                data["dataframes"] = json.dumps(df_list)
                 return Response(data, status=status.HTTP_200_OK)
             return Response({"Notebook not found": "Notebook does not exist"},
                             status=status.HTTP_404_NOT_FOUND)
