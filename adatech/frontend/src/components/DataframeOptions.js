@@ -6,6 +6,9 @@ export class DataframeOptions extends Component {
 
   constructor(props){
     super(props);
+    this.state = {
+      dataframes: this.props.dataframes,
+    }
 
   };
 
@@ -16,9 +19,8 @@ export class DataframeOptions extends Component {
         <li style={{marginLeft: "15px", paddingTop:"15px"}}>
           <h4 class="white-text" style={{fontSize: "15pt"}}>Data Summary</h4>
         </li>
-
         <ul class="collapsible collapsible-accordion">
-          <RandomSamples />
+          <RandomSamples dataframes={this.props.dataframes} />
         </ul>
       </div>
   )

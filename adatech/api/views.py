@@ -1,11 +1,13 @@
 from rest_framework import generics, status
-from .serializers import NotebookSerializer, CreateNotebookSerializer
+from .serializers import NotebookSerializer
 from .models import Notebook
 from rest_framework.views import APIView
 from rest_framework.response import Response
 import pandas as pd
 from django.core.files.storage import FileSystemStorage
 import json
+from rest_framework.decorators import api_view
+
 # from django.views import View
 # from django.shortcuts import render
 
@@ -18,7 +20,6 @@ class NotebookView(generics.ListAPIView):
 
 
 class CreateNotebookView(APIView):
-    serializer_class = CreateNotebookSerializer
 
     def post(self, request, format=None):
         if not self.request.session.exists(self.request.session.session_key):
@@ -51,22 +52,22 @@ class GetNotebookView(APIView):
                         status=status.HTTP_400_BAD_REQUEST)
 
 
-class BackEndClass(APIView):
-    lookup_url_kwarg = "id"
+class AnalysisClass():
 
-    def post(self, request, format=None):
+    @api_view(('POST',))
+    def file_upload(request):
         url = request.META["HTTP_REFERER"]
         to_find = "notebook/"
         length = len(to_find)
         index = url.rfind(to_find) + length
         id = int(url[index:])
         notebook = Notebook.objects.get(id=id)
-
         file_entry = request.FILES.getlist("file")[0]
         # TODO: return a response for when no files were placed
         # user cancelled his shit
         fs = FileSystemStorage()
         name = fs.save(file_entry.name, file_entry)
+        df_name = file_entry.name
         path = fs.path(name)
         df = pd.read_csv(path)
         fs.delete(name)
@@ -83,4 +84,14 @@ class BackEndClass(APIView):
         notebook.output = json.dumps(output)
         notebook.save()
         data = NotebookSerializer(notebook).data
+        df_list = request.session.get("df_list", [])
+        df_list.append(df_name)
+        request.session["df_list"] = df_list
+        data["dataframes"] = json.dumps(df_list)
         return Response(data, status=status.HTTP_200_OK)
+
+    @api_view(('POST',))
+    def random_samples(request):
+        print("I was called!")
+        return Response({"All Good!": "Random Samples got called"},
+                        status=status.HTTP_200_OK)

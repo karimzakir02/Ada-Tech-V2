@@ -5,11 +5,14 @@ import Sidenav from "./Sidenav";
 export default class Notebook extends Component {
   constructor(props){
     super(props);
+    this.getNotebookDetails = this.getNotebookDetails.bind(this);
     this.uploadFile = this.uploadFile.bind(this);
+    this.updateState = this.updateState.bind(this);
     this.state = {
       id: this.props.match.params.id,
       isAuthor: false,
       output: [],
+      dataframes: [],
     }
     this.id = this.props.match.params.id;
     this.getNotebookDetails();
@@ -29,21 +32,17 @@ export default class Notebook extends Component {
     }
     return cookieValue;
 }
-//
+
   getNotebookDetails() {
     fetch("/api/get-notebook" + "?id=" + this.id)
     .then((response) => response.json())
-    .then((data) => {
-      this.setState({
-          isAuthor: data.is_author,
-          output: data.output,
-      })
-    });
+    .then((data) => this.updateState(data))
   }
-//
+
     uploadFile(e) {
       let formData = new FormData();
       formData.append("file", event.target.files[0]);
+
       const csrf = this.getCookie("csrftoken");
       const requestOptions = {
         method: "POST",
@@ -54,36 +53,87 @@ export default class Notebook extends Component {
         .then((response) => response.json())
         .then((data) => this.updateState(data))
     }
-//
+
     updateState(data) {
       this.setState({
         output: JSON.parse(data.output),
+        dataframes: JSON.parse(data.dataframes),
       });
-      console.log(this.state.output);
+      console.log(this.state.dataframes);
+      this.insertOutput(data);
     }
+
+    // TODO: Don't forget to style your th tags, and other tags that need styling
+    // Refer to the previous website version github.
+    insertOutput(data) {
+      var output_div = document.getElementById("output_div");
+      output_div.innerHTML = "";
+      if (this.state.output.length == 0){
+        output_div.innerHTML = "Hey! Welcome to your notebook!";
+        output_div.style.paddingLeft = "20%";
+      }
+      else{
+        for (var output of this.state.output) {
+          var div = document.createElement("div");
+          div.className = "output"
+          div.className += " section";
+          if (output[0] == "table") {
+            var table_data = output[1];
+            var table_headings = table_data[0];
+            var table_rows = table_data[1];
+            var table = document.createElement("table");
+            table.className = "striped";
+            var thead = table.createTHead();
+            var head_row = thead.insertRow();
+            for (var heading of table_headings) {
+              var th = document.createElement("th");
+              var text = document.createTextNode(heading);
+              th.style.fontSize = "10pt";
+              th.style.padding = "8px";
+              th.appendChild(text);
+              head_row.appendChild(th);
+            }
+            var tbody = table.createTBody();
+            for (var row_data of table_rows){
+              var row = tbody.insertRow();
+              for (var cell_data of row_data) {
+                var cell = row.insertCell();
+                cell.style.fontSize = "10pt";
+                cell.style.padding = "8px";
+                var text = document.createTextNode(cell_data);
+                cell.appendChild(text);
+              }
+            }
+            div.appendChild(table);
+          }
+          output_div.appendChild(div);
+        }
+      }
+      }
 
   // Perhaps getNotebookDetails func can serve as a function that we call after
   // getting a new output. Good idea past me!
 
+  // For future: pass the function parameters within the fetch url
+  // you'll be able to handle that in the urls later
+
   render() {
     return (
       <div>
-      <Sidenav />
-      <div class="row" style={{padding: "10px"}}>
-      <div class="col s11" style={{padding: "10px"}}>
-      <div class="container" id = "output_div">
-        <p style = {{textAlign: "center"}}>Welcome to your notebook!</p>
-      </div>
-      </div>
-      <div class="col s1">
-        <form class="pushpin-buttons pinned" method="POST" enctype = "multipart/form-data" style = {{marginLeft: "8px", paddingTop: "15px"}}>
-          <button style = {{backgroundColor: "#790604"}} class = "btn-floating btn-file btn-large waves-effect waves-light" type = "submit">
-            <input type="file" name="document" onChange={this.uploadFile} />
-            <i class="material-icons">add</i>
-          </button>
-        </form>
-      </div>
-      </div>
+        <Sidenav dataframes={this.state.dataframes}/>
+        <div class="row" style={{padding: "10px", paddingLeft: "15%"}}>
+          <div class="col s11" style={{padding: "10px"}}>
+            <div class="container" id = "output_div"></div>
+          </div>
+          <div class="col s1">
+            <form class="pushpin-buttons pinned" method="POST" enctype = "multipart/form-data" style = {{marginLeft: "8px", paddingTop: "15px"}}>
+              <button style = {{backgroundColor: "#790604"}} class = "btn-floating btn-file btn-large waves-effect waves-light" type = "submit">
+                <input type="file" name="document" onChange={this.uploadFile} />
+                <i class="material-icons">add</i>
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
     );
   }

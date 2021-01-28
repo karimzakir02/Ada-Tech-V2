@@ -57,3 +57,12 @@ div {
   top: 0;
   left: 0;
 }
+
+.output {
+  overflow: auto;
+  min-height: auto;
+  max-height: 50vh;
+  width: auto;
+  clear: both;
+  margin: 15px;
+}
