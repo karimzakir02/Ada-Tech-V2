@@ -59,7 +59,6 @@ export default class Notebook extends Component {
         output: JSON.parse(data.output),
         dataframes: JSON.parse(data.dataframes),
       });
-      console.log(this.state.dataframes);
       this.insertOutput(data);
     }
 
@@ -72,7 +71,7 @@ export default class Notebook extends Component {
         output_div.innerHTML = "Hey! Welcome to your notebook!";
         output_div.style.paddingLeft = "20%";
       }
-      else{
+      else {
         for (var output of this.state.output) {
           var div = document.createElement("div");
           div.className = "output"
@@ -120,7 +119,7 @@ export default class Notebook extends Component {
   render() {
     return (
       <div>
-        <Sidenav dataframes={this.state.dataframes}/>
+        <Sidenav dataframes={this.state.dataframes} func={this.updateState}/>
         <div class="row" style={{padding: "10px", paddingLeft: "15%"}}>
           <div class="col s11" style={{padding: "10px"}}>
             <div class="container" id = "output_div"></div>

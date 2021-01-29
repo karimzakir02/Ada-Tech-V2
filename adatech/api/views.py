@@ -94,6 +94,6 @@ class AnalysisClass():
 
     @api_view(('POST',))
     def random_samples(request):
-        print("I was called!")
-        return Response({"All Good!": "Random Samples got called"},
-                        status=status.HTTP_200_OK)
+        return Response({"output": "Random Samples got called",
+                        "dataframes": "dataframes"},
+                        status=status.HTTP_200_OK)  

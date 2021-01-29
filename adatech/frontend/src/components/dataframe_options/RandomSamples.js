@@ -12,49 +12,18 @@ export class RandomSamples extends Component {
     super(props);
     this.state = {
       dataframes: this.props.dataframes,
+      select_value: null,
+      input_value: null,
     }
-    this.submitForm = this.submitForm.bind(this);
     this.prepareComponent = this.prepareComponent.bind(this);
+    this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   };
 
   async componentDidMount() {
     this.prepareComponent();
-  }
-
-  prepareComponent() {
-    if (this.props.dataframes != this.state.dataframes) {
-      this.setState({
-        dataframes: this.props.dataframes,
-      });
-    }
-    this.createSelect();
-
-  }
-  createSelect() {
-    var select = document.createElement("select");
-    var select_field = document.getElementById("random_samples_select");
-    select_field.innerHTML = "";
-    for (var dataframe of this.props.dataframes) {
-      select.options.add(new Option(dataframe, dataframe));
-    }
-    select_field.appendChild(select);
-    var label = document.createElement("label");
-    label.innerHTML = "Dataframe";
-    select_field.appendChild(label);
-    M.FormSelect.init(select);
-  }
-
-  submitForm() {
-    const csrf = this.getCookie("csrftoken");
-    const requestOptions = {
-      method: "POST",
-      headers: {
-        csrf: csrf
-      },
-    };
-    fetch("/api/random-samples", requestOptions)
-      .then((response) => response.json())
-      .then((data) => console.log(data))
+    M.AutoInit();
   }
 
   getCookie(name) {
@@ -72,6 +41,43 @@ export class RandomSamples extends Component {
     return cookieValue;
   }
 
+  prepareComponent() {
+    this.createSelect();
+  }
+  createSelect() {
+    var select = document.getElementById("random_samples_select");
+    select.innerHTML = "";
+    for (var dataframe of this.props.dataframes) {
+      select.options.add(new Option(dataframe, dataframe));
+    }
+    select.options[0].selected = true;
+    M.FormSelect.init(select);
+  }
+
+  handleSelectChange(event) {
+    this.setState({
+      select_value: event.target.value,
+    })
+  }
+
+  handleInputChange(event){
+    this.setState({
+      input_value: event.target.value
+    })
+  }
+
+  handleClick() {
+    const csrf = this.getCookie("csrftoken");
+    const requestOptions = {
+      method: "POST",
+      headers: {csrf: csrf},
+    };
+    fetch("/api/random-samples", requestOptions)
+    .then((response) => response.json())
+    .then((data) => this.props.func(data))
+  }
+
+  // TODO: See if it would be possible to later set the value of the above input to 5
 
     render() {
       return(
@@ -79,15 +85,18 @@ export class RandomSamples extends Component {
             <a onClick={this.prepareComponent} class="collapsible-header waves-effect waves-teal white-text"><span style={{marginLeft: "10px"}}>Random Samples</span></a>
             <div class="collapsible-body">
                 <div class="row" style={{paddingTop: "6%"}}>
-                  <div class="input-field col s6" id="random_samples_select"></div>
-                  <div class="input-field col s6">
-                    <input value="5" id="n_samples" name="n_samples" type="text" />
-                    <label>Number of Samples:</label>
+                  <div class="input-field col s6" id="random_samples_select_field">
+                    <select id="random_samples_select" onChange={this.handleSelectChange}></select>
+                    <label>Dataframes</label>
+                  </div>
+                  <div class="input-field col s6" id="random_samples_input_field">
+                    <input id="random_samples_input" type="text" onChange={this.handleInputChange} />
+                    <label class="active" for="random_samples_input">Number of Samples:</label>
                   </div>
                 <div class="divider"></div>
                 <div class="section" style={{paddingRight: "2%"}}>
                   <button class="btn-flat waves-effect waves-teal modal-trigger" href="#random_sample_modal">Advanced</button>
-                  <button style = {{backgroundColor: "#790604"}} class="btn right waves-effect waves-teal" name="sample_btn" type="submit">Confirm</button>
+                  <button onClick={this.handleClick} style = {{backgroundColor: "#790604"}} class="btn right waves-effect waves-teal" name="sample_btn" type="submit">Confirm</button>
                 </div>
                 </div>
             </div>
