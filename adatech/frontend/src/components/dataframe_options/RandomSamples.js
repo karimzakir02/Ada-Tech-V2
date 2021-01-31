@@ -1,63 +1,72 @@
-import React, { Component } from "react";
-import {render} from "react-dom";
+import React, {
+  Component
+} from "react";
+import {
+  render
+} from "react-dom";
+import M from 'materialize-css'
 
 export class RandomSamples extends Component {
 
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
       dataframes: this.props.dataframes,
+      select_value: null,
+      input_value: null,
     }
-    // this.createSelect();
-    this.submitForm = this.submitForm.bind(this);
-    // this.changeSelectOptions();
-    this.changeSelectOptions = this.changeSelectOptions.bind(this);
-    this.call = this.call.bind(this);
     this.prepareComponent = this.prepareComponent.bind(this);
+    this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   };
 
   async componentDidMount() {
-    if (this.props.dataframes != this.state.dataframes){
-      this.setState({
-        dataframes: this.props.dataframes,
-      });
+    this.prepareComponent();
+    M.AutoInit();
+  }
+
+  getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      var cookies = document.cookie.split(';');
+      for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i].toString().replace(/^([\s]*)|([\s]*)$/g, "");
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
     }
-    this.createSelect();
+    return cookieValue;
   }
 
   prepareComponent() {
-    if (this.props.dataframes != this.state.dataframes){
-      this.setState({
-        dataframes: this.props.dataframes,
-      });
-    }
-    console.log(this.state.dataframes);
     this.createSelect();
   }
   createSelect() {
-    var select = document.createElement("select");
-    var select_field = document.getElementById("random_samples_select")
-    for (var dataframe of this.state.dataframes){
-      console.log(dataframe);
+    var select = document.getElementById("random_samples_select");
+    select.innerHTML = "";
+    for (var dataframe of this.props.dataframes) {
       select.options.add(new Option(dataframe, dataframe));
     }
-    console.log(select);
-    select_field.appendChild(select);
-    var label = document.createElement("label");
-    label.innerHTML = "Dataframe";
-    select_field.appendChild(label);
-    select_field.formSelect();
-    }
-  changeSelectOptions() {
-    // this.createSelect();
-    // var select = document.getElementById("random_samples_dataframe");
-    // console.log(select);
-    // for (var dataframe of this.state.dataframes) {
-    //   select.options.add(new Option(dataframe, dataframe));
-    // }
+    select.options[0].selected = true;
+    M.FormSelect.init(select);
   }
 
-  submitForm() {
+  handleSelectChange(event) {
+    this.setState({
+      select_value: event.target.value,
+    })
+  }
+
+  handleInputChange(event){
+    this.setState({
+      input_value: event.target.value
+    })
+  }
+
+  handleClick() {
     const csrf = this.getCookie("csrftoken");
     const requestOptions = {
       method: "POST",
@@ -65,50 +74,34 @@ export class RandomSamples extends Component {
     };
     fetch("/api/random-samples", requestOptions)
     .then((response) => response.json())
-    .then((data) => console.log(data))
+    .then((data) => this.props.func(data))
   }
 
-  getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = cookies[i].toString().replace(/^([\s]*)|([\s]*)$/g, "");
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
+  // TODO: See if it would be possible to later set the value of the above input to 5
 
-call(){
-  console.log(this.props.dataframes);
-  console.log(this.state.dataframes);
-}
-//What if I constructed when Random Samples got?
-
-  render() {
-    return(
-        <li class="bold">
-          <a onClick={this.prepareComponent} class="collapsible-header waves-effect waves-teal white-text"><span style={{marginLeft: "10px"}}>Random Samples</span></a>
-          <div class="collapsible-body">
-              <div class="row" style={{paddingTop: "6%"}}>
-                <div class="input-field col s6" id="random_samples_select"></div>
-                <div class="input-field col s6">
-                  <input value="5" id="n_samples" name="n_samples" type="text" />
-                  <label>Number of Samples:</label>
+    render() {
+      return(
+          <li class="bold">
+            <a onClick={this.prepareComponent} class="collapsible-header waves-effect waves-teal white-text"><span style={{marginLeft: "10px"}}>Random Samples</span></a>
+            <div class="collapsible-body">
+                <div class="row" style={{paddingTop: "6%"}}>
+                  <div class="input-field col s6" id="random_samples_select_field">
+                    <select id="random_samples_select" onChange={this.handleSelectChange}></select>
+                    <label>Dataframes</label>
+                  </div>
+                  <div class="input-field col s6" id="random_samples_input_field">
+                    <input id="random_samples_input" type="text" onChange={this.handleInputChange} />
+                    <label class="active" for="random_samples_input">Number of Samples:</label>
+                  </div>
+                <div class="divider"></div>
+                <div class="section" style={{paddingRight: "2%"}}>
+                  <button class="btn-flat waves-effect waves-teal modal-trigger" href="#random_sample_modal">Advanced</button>
+                  <button onClick={this.handleClick} style = {{backgroundColor: "#790604"}} class="btn right waves-effect waves-teal" name="sample_btn" type="submit">Confirm</button>
                 </div>
-              <div class="divider"></div>
-              <div class="section" style={{paddingRight: "2%"}}>
-                <button class="btn-flat waves-effect waves-teal modal-trigger" href="#random_sample_modal">Advanced</button>
-                <button style = {{backgroundColor: "#790604"}} class="btn right waves-effect waves-teal" name="sample_btn" type="submit" onClick={this.call}>Confirm</button>
-              </div>
-              </div>
-          </div>
-        </li>
-  )
+                </div>
+            </div>
+          </li>
+    )
   }
 }
 
