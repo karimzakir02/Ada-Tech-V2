@@ -3,10 +3,10 @@ from .serializers import NotebookSerializer
 from .models import Notebook
 from rest_framework.views import APIView
 from rest_framework.response import Response
-import pandas as pd
 from django.core.files.storage import FileSystemStorage
 import json
 from rest_framework.decorators import api_view
+from .classes import NotebookClass, Data
 
 # from django.views import View
 # from django.shortcuts import render
@@ -28,6 +28,10 @@ class CreateNotebookView(APIView):
         author = self.request.session.session_key
         notebook = Notebook(author=author)
         notebook.save()
+        id = notebook.id
+        notebook_dict = request.session.get("notebook_dict", {})
+        notebook_dict[f"{id}_notebook"] = json.dumps(NotebookClass(id, author))
+        request.session["notebook_dict"] = notebook_dict
         return Response(NotebookSerializer(notebook).data,
                         status=status.HTTP_201_CREATED)
 
@@ -58,11 +62,7 @@ class AnalysisClass():
 
     @api_view(('POST',))
     def file_upload(request):
-        url = request.META["HTTP_REFERER"]
-        to_find = "notebook/"
-        length = len(to_find)
-        index = url.rfind(to_find) + length
-        id = int(url[index:])
+        id = request.data.get("id")
         notebook = Notebook.objects.get(id=id)
         file_entry = request.FILES.getlist("file")[0]
         # TODO: return a response for when no files were placed
@@ -71,29 +71,21 @@ class AnalysisClass():
         name = fs.save(file_entry.name, file_entry)
         df_name = file_entry.name
         path = fs.path(name)
-        df = pd.read_csv(path)
+        df_class = Data(df_name, path)
         fs.delete(name)
-        first5 = df.head()
-        basic_values = first5.values.tolist()
-        last5 = df.tail()
-        ellipses = ["..." for column in df.columns]
-        basic_values.append(ellipses)
-        basic_values.extend(last5.values.tolist())
-        data_summary = [df.columns.values.tolist(), basic_values]
-        new_output = ["table", data_summary]
         output = json.loads(notebook.output)
+        new_output = df_class.initial_output()
         output.append(new_output)
         notebook.output = json.dumps(output)
         notebook.save()
+        request.session[f"{id}_notebook"].add_dataset(df_name, df_class)
+        dataset_list = request.session[f"{id}_notebook"].dataset_names
         data = NotebookSerializer(notebook).data
-        df_list = request.session.get("df_list", [])
-        df_list.append(df_name)
-        request.session["df_list"] = df_list
-        data["dataframes"] = json.dumps(df_list)
+        data["dataframes"] = json.dumps(dataset_list)
         return Response(data, status=status.HTTP_200_OK)
 
     @api_view(('POST',))
     def random_samples(request):
         return Response({"output": "Random Samples got called",
                         "dataframes": "dataframes"},
-                        status=status.HTTP_200_OK)  
+                        status=status.HTTP_200_OK)

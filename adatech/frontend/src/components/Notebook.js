@@ -42,6 +42,7 @@ export default class Notebook extends Component {
     uploadFile(e) {
       let formData = new FormData();
       formData.append("file", event.target.files[0]);
+      formData.append("id", this.state.id);
 
       const csrf = this.getCookie("csrftoken");
       const requestOptions = {
