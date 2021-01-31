@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\zakir\Documents\Coding Projects\Ada-Tech-V2\project-env"
+VIRTUAL_ENV="C:\Users\zakir\Documents\Coding Projects\Ada Tech Versions\Ada-Tech-V2\project-env"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

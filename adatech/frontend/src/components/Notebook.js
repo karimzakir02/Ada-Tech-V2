@@ -39,77 +39,77 @@ export default class Notebook extends Component {
     .then((data) => this.updateState(data))
   }
 
-    uploadFile(e) {
-      let formData = new FormData();
-      formData.append("file", event.target.files[0]);
-      formData.append("id", this.state.id);
+  uploadFile(e) {
+    let formData = new FormData();
+    formData.append("file", event.target.files[0]);
+    formData.append("id", this.state.id);
 
-      const csrf = this.getCookie("csrftoken");
-      const requestOptions = {
-        method: "POST",
-        headers: {csrf: csrf},
-        body: formData,
-      };
-      fetch("/api/add-file", requestOptions)
-        .then((response) => response.json())
-        .then((data) => this.updateState(data))
+    const csrf = this.getCookie("csrftoken");
+    const requestOptions = {
+      method: "POST",
+      headers: {csrf: csrf},
+      body: formData,
+    };
+    fetch("/api/add-file", requestOptions)
+      .then((response) => response.json())
+      .then((data) => this.updateState(data))
+  }
+
+  updateState(data) {
+    this.setState({
+      output: JSON.parse(data.output),
+      dataframes: JSON.parse(data.dataframes),
+    });
+    this.insertOutput(data);
+  }
+
+  // TODO: Don't forget to style your th tags, and other tags that need styling
+  // Refer to the previous website version github.
+  insertOutput(data) {
+    var output_div = document.getElementById("output_div");
+    output_div.innerHTML = "";
+    if (this.state.output.length == 0){
+      output_div.innerHTML = "Hey! Welcome to your notebook!";
+      output_div.style.paddingLeft = "20%";
     }
-
-    updateState(data) {
-      this.setState({
-        output: JSON.parse(data.output),
-        dataframes: JSON.parse(data.dataframes),
-      });
-      this.insertOutput(data);
-    }
-
-    // TODO: Don't forget to style your th tags, and other tags that need styling
-    // Refer to the previous website version github.
-    insertOutput(data) {
-      var output_div = document.getElementById("output_div");
-      output_div.innerHTML = "";
-      if (this.state.output.length == 0){
-        output_div.innerHTML = "Hey! Welcome to your notebook!";
-        output_div.style.paddingLeft = "20%";
-      }
-      else {
-        for (var output of this.state.output) {
-          var div = document.createElement("div");
-          div.className = "output"
-          div.className += " section";
-          if (output[0] == "table") {
-            var table_data = output[1];
-            var table_headings = table_data[0];
-            var table_rows = table_data[1];
-            var table = document.createElement("table");
-            table.className = "striped";
-            var thead = table.createTHead();
-            var head_row = thead.insertRow();
-            for (var heading of table_headings) {
-              var th = document.createElement("th");
-              var text = document.createTextNode(heading);
-              th.style.fontSize = "10pt";
-              th.style.padding = "8px";
-              th.appendChild(text);
-              head_row.appendChild(th);
-            }
-            var tbody = table.createTBody();
-            for (var row_data of table_rows){
-              var row = tbody.insertRow();
-              for (var cell_data of row_data) {
-                var cell = row.insertCell();
-                cell.style.fontSize = "10pt";
-                cell.style.padding = "8px";
-                var text = document.createTextNode(cell_data);
-                cell.appendChild(text);
+    else {
+      for (var output of this.state.output) {
+        var div = document.createElement("div");
+        div.className = "output"
+        div.className += " section";
+        if (output[0] == "table") {
+          var table_data = output[1];
+          var table_headings = table_data[0];
+          var table_rows = table_data[1];
+          var table = document.createElement("table");
+          table.className = "striped";
+          var thead = table.createTHead();
+          var head_row = thead.insertRow();
+          for (var heading of table_headings) {
+            var th = document.createElement("th");
+            var text = document.createTextNode(heading);
+            th.style.fontSize = "10pt";
+            th.style.padding = "8px";
+            th.appendChild(text);
+            head_row.appendChild(th);
+          }
+          var tbody = table.createTBody();
+          for (var row_data of table_rows){
+            var row = tbody.insertRow();
+            for (var cell_data of row_data) {
+              var cell = row.insertCell();
+              cell.style.fontSize = "10pt";
+              cell.style.padding = "8px";
+              var text = document.createTextNode(cell_data);
+              cell.appendChild(text);
               }
             }
-            div.appendChild(table);
+          div.appendChild(table);
           }
-          output_div.appendChild(div);
+        output_div.appendChild(div);
         }
       }
-      }
+    }
 
   // Perhaps getNotebookDetails func can serve as a function that we call after
   // getting a new output. Good idea past me!
