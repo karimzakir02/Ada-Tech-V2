@@ -28,10 +28,6 @@ class CreateNotebookView(APIView):
         author = self.request.session.session_key
         notebook = Notebook(author=author)
         notebook.save()
-        id = notebook.id
-        notebook_dict = request.session.get("notebook_dict", {})
-        notebook_dict[f"{id}_notebook"] = json.dumps(NotebookClass(id, author))
-        request.session["notebook_dict"] = notebook_dict
         return Response(NotebookSerializer(notebook).data,
                         status=status.HTTP_201_CREATED)
 
