@@ -5,7 +5,7 @@ from .models import Dataset
 
 class DatasetHolder:
 
-    def __init__(self, name, author, path=False, data=False, reset_index=True):
+    def __init__(self, id_name, name, author, path=False, data=False, ri=True):
         self.name = name
         self.author = author
         if path:
@@ -13,7 +13,7 @@ class DatasetHolder:
         else:
             self.df = data
 
-        if reset_index:
+        if ri:
             self.df.reset_index(inplace=True)
 
         self.columns_info()

@@ -74,10 +74,11 @@ class AnalysisClass():
         id_name = fs.save(file_entry.name, file_entry)
         df_name = file_entry.name
         path = fs.path(id_name)
-        dataset = DatasetHolder(df_name, id_name, notebook.author, path)
+        dataset = DatasetHolder(id_name, df_name, notebook.author, path=path)
         dataset_document = dataset.to_document()
-        # This line creates trouble:
-        notebook.datasets.append(dataset_document)
+        dataset_document.save()
+        notebook.dataset_ids.append(id_name)
+        notebook.dataset_names.append(df_name)
         fs.delete(id_name)
         output = dataset.initial_output()
         notebook.output.append(output)
