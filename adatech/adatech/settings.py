@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import mongoengine
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -39,7 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "api.apps.ApiConfig",
     "rest_framework",
-    "frontend.apps.FrontendConfig"
+    "frontend.apps.FrontendConfig",
+    'rest_framework_mongoengine',
+
 ]
 
 MIDDLEWARE = [
@@ -129,3 +132,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "api/data/user_files")
 MEDIA_URL = "/media/"
+
+
+mongoengine.connect(
+    db="adatech-database",
+    host="localhost",
+)

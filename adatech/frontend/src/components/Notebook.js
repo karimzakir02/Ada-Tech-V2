@@ -57,8 +57,8 @@ export default class Notebook extends Component {
 
   updateState(data) {
     this.setState({
-      output: JSON.parse(data.output),
-      dataframes: JSON.parse(data.dataframes),
+      output: data.output,
+      dataframes: data.dataset_names,
     });
     this.insertOutput(data);
   }
@@ -110,9 +110,6 @@ export default class Notebook extends Component {
         }
       }
     }
-
-  // Perhaps getNotebookDetails func can serve as a function that we call after
-  // getting a new output. Good idea past me!
 
   // For future: pass the function parameters within the fetch url
   // you'll be able to handle that in the urls later
