@@ -11,6 +11,7 @@ export class RandomSamples extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      notebook_id: this.props.id,
       dataframes: this.props.dataframes,
       select_value: null,
       input_value: null,
@@ -51,6 +52,9 @@ export class RandomSamples extends Component {
       select.options.add(new Option(dataframe, dataframe));
     }
     select.options[0].selected = true;
+    this.setState({
+      select_value: select.options[0].value
+    })
     M.FormSelect.init(select);
   }
 
@@ -68,9 +72,15 @@ export class RandomSamples extends Component {
 
   handleClick() {
     const csrf = this.getCookie("csrftoken");
+    let formData = new FormData();
+    console.log(this.state.select_value);
+    formData.append("id", this.state.notebook_id);
+    formData.append("dataset", this.state.select_value);
+    formData.append("number", this.state.input_value);
     const requestOptions = {
       method: "POST",
       headers: {csrf: csrf},
+      body: formData,
     };
     fetch("/api/random-samples", requestOptions)
     .then((response) => response.json())

@@ -1,12 +1,13 @@
 from rest_framework import generics, status
-from .serializers import NotebookSerializer
-from .models import Notebook
+from .serializers import NotebookSerializer, DatasetSerializer
+from .models import Notebook, Dataset
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.core.files.storage import FileSystemStorage
 import json
 from rest_framework.decorators import api_view
 from .classes import NotebookHolder, DatasetHolder
+import pandas as pd
 
 # from django.views import View
 # from django.shortcuts import render
@@ -55,17 +56,32 @@ class GetNotebookView(APIView):
                         status=status.HTTP_400_BAD_REQUEST)
 
 
+class GetDatasetView(APIView):
+    serializer_class = DatasetSerializer
+    lookup_url_kwarg = "id"
+
+    def get(self, request, format=None):
+        id = request.GET.get(self.lookup_url_kwarg)
+        if id is not None:
+            dataset = Dataset.objects(id=id)[0]
+            data = DatasetSerializer(dataset).data
+            return Response(data, status=status.HTTP_200_OK)
+
+
 class AnalysisClass():
+
+    @staticmethod
+    def dataset_to_document(id_name, author, path):
+        dataset = Dataset()
+        dataset.id_name = id_name
+        dataset.author = author
+        data = pd.read_csv(path)
+        dataset.columns = data.columns.values.tolist()
+        dataset.values = data.values.tolist()
+        return dataset
 
     @api_view(('POST',))
     def file_upload(request):
-        # The first thing to do would be to make sure that the Data is saved
-        # as an embedded document in the notebook
-        # Perhaps have a function within the data class that just converts
-        # the class automatically to what you need to embed the document
-        # There is also a different way to doing this, using the data model
-        # itself
-        # The only way to do this is using the actual model stoopid
         id = request.data.get("id")
         notebook = Notebook.objects(id=id)[0]
         file_entry = request.FILES.getlist("file")[0]
@@ -74,20 +90,35 @@ class AnalysisClass():
         id_name = fs.save(file_entry.name, file_entry)
         df_name = file_entry.name
         path = fs.path(id_name)
-        dataset = DatasetHolder(id_name, df_name, notebook.author, path=path)
-        dataset_document = dataset.to_document()
+        dataset_document = AnalysisClass.dataset_to_document(id_name,
+                                                             notebook.author,
+                                                             path)
         dataset_document.save()
+        dataset = DatasetHolder(dataset_document)
         notebook.dataset_ids.append(id_name)
         notebook.dataset_names.append(df_name)
         fs.delete(id_name)
-        output = dataset.initial_output()
+        output = dataset.summary_output()
         notebook.output.append(output)
         data = NotebookSerializer(notebook).data
         notebook.save()
+        serialized_data = DatasetSerializer(dataset_document).data
+        request.session[f"{id}_{df_name}"] = serialized_data
         return Response(data, status=status.HTTP_200_OK)
 
     @api_view(('POST',))
     def random_samples(request):
-        return Response({"output": "Random Samples got called",
-                         "dataframes": "dataframes"},
-                        status=status.HTTP_200_OK)
+        # I think first check what happens if you access it through
+        # the database, see the speed, then try working with the sessional data
+        id = request.data.get("id")
+        dataset_name = request.data.get("dataset")
+        n = request.data.get("number")
+        dataset_document = request.session.get(f"{id}_{dataset_name}", None)
+        dataset = DatasetHolder(dataset_document)
+        output = dataset.random_samples(n)
+        notebook = Notebook.objects(id=id)[0]
+        print(output[2])
+        notebook.output.append(output)
+        data = NotebookSerializer(notebook).data
+        notebook.save()
+        return Response(data, status=status.HTTP_200_OK)

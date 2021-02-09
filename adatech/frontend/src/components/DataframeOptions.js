@@ -20,7 +20,7 @@ export class DataframeOptions extends Component {
           <h4 class="white-text" style={{fontSize: "15pt"}}>Data Summary</h4>
         </li>
         <ul class="collapsible collapsible-accordion">
-          <RandomSamples dataframes={this.props.dataframes} func={this.props.func} />
+          <RandomSamples id={this.props.id} dataframes={this.props.dataframes} func={this.props.func} />
         </ul>
       </div>
   )

@@ -3,6 +3,7 @@ import {render} from "react-dom";
 import Notebook from "./Notebook";
 import HomePage from "./HomePage";
 import Navbar from "./Navbar";
+import Dataset from "./Dataset";
 import {
   BrowserRouter as Router,
   Switch,
@@ -20,7 +21,8 @@ export default class ReactRouter extends Component {
       <Router>
         <Switch>
           <Route exact path="/" component={HomePage}/>
-          <Route path="/notebook/:id" component={Notebook}/>
+          <Route exact path="/notebook/:id" component={Notebook}/>
+          <Route path="/notebook/dataset/:id" component={Dataset}/>
         </Switch>
       </Router>
     );

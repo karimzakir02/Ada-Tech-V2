@@ -39,7 +39,7 @@ export class Sidenav extends Component {
                 <li class = "tab col s4"><a href = "#ml" style = {{color: "white"}}>Models</a></li>
               </ul>
             </div>
-            <DataframeOptions dataframes={this.props.dataframes} func={this.props.func} />
+            <DataframeOptions id={this.props.id} dataframes={this.props.dataframes} func={this.props.func} />
             <StatisticsOptions />
             <MachineLearningOptions />
           </div>

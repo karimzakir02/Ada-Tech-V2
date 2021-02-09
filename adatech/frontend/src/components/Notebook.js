@@ -105,8 +105,16 @@ export default class Notebook extends Component {
               }
             }
           div.appendChild(table);
-          }
+        }
         output_div.appendChild(div);
+        if (output[2] != null){
+          var link = document.createElement("a");
+          // Need to make a proper link here!
+          link.href = output[2];
+          link.target = "_blank"
+          link.textContent = "View Full Dataframe";
+          output_div.appendChild(link);
+        }
         }
       }
     }
@@ -117,7 +125,7 @@ export default class Notebook extends Component {
   render() {
     return (
       <div>
-        <Sidenav dataframes={this.state.dataframes} func={this.updateState}/>
+        <Sidenav id={this.state.id} dataframes={this.state.dataframes} func={this.updateState}/>
         <div class="row" style={{padding: "10px", paddingLeft: "15%"}}>
           <div class="col s11" style={{padding: "10px"}}>
             <div class="container" id = "output_div"></div>

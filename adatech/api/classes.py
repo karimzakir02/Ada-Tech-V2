@@ -5,22 +5,16 @@ from .models import Dataset
 
 class DatasetHolder:
 
-    def __init__(self, id_name, name, author, path=False, data=False, ri=True):
-        self.name = name
-        self.author = author
-        if path:
-            self.df = pd.read_csv(path)
-        else:
-            self.df = data
-
-        if ri:
-            self.df.reset_index(inplace=True)
-
+    def __init__(self, model):
+        self.id_name = model["id_name"]
+        self.name = model["name"]
+        self.author = model["author"]
+        self.columns = model["columns"]
+        self.values = model["values"]
+        self.df = pd.DataFrame(data=self.values, columns=self.columns)
         self.columns_info()
-        self.update_values()
 
     def columns_info(self):
-        self.columns = self.df.columns.values.tolist()
         self.numerical_columns = self.df.select_dtypes(
             include=np.number).columns.tolist()
         self.object_columns = self.df.select_dtypes(
@@ -34,49 +28,52 @@ class DatasetHolder:
 
     def to_document(self):
         dataset = Dataset()
-        dataset.id_name = self.name
+        dataset.id_name = self.id_name
         dataset.author = self.author
         dataset.columns = self.columns
         dataset.values = self.df.values.tolist()
         return dataset
 
-    def greater_than_20(self, df):
-        if len(df) > 20:
-            output = self.initial_output(True, df)
-        else:
-            output = ["table",
-                      [df.columns.values.tolist(), df.values.tolist()]]
-        return output
-
-    def initial_output(self, custom=False):
+    def summary_output(self, custom=False, data=None):
         if custom:
-            df = custom
+            df = data
         else:
             df = self.df
 
         first5 = df.head()
         basic_values = first5.values.tolist()
         last5 = df.tail()
-        ellipses = ["..." for column in self.columns]
+        ellipses = ["..." for column in df.columns]
         basic_values.append(ellipses)
         basic_values.extend(last5.values.tolist())
         return ["table", [df.columns.values.tolist(), basic_values]]
 
-    def random_samples(self, columns, n_samples, weight=None):
-        if weight is not None:
-            weight = self.df[weight]
-
-        if n_samples < 1:
-            samples = self.df[columns].sample(frac=n_samples, weight=weight)
+    def random_samples(self, n_samples, columns=None, weight=None):
+        # if weight is not None:
+        #     weight = self.df[weight]
+        #
+        # if n_samples < 1:
+        #     samples = self.df[columns].sample(frac=n_samples, weight=weight)
+        # else:
+        #    samples = self.df[columns].sample(n=int(n_samples), weight=weight)
+        samples = self.df.sample(n=int(n_samples))
+        columns = samples.columns.values.tolist()
+        values = samples.values.tolist()
+        if len(samples) > 20:
+            # Needs to be a link, not the other thing
+            output = self.summary_output(True, samples)
+            model = Dataset()
+            model.id_name = f"{self.author}_samples_{self.id_name}"
+            model.name = f"samples_{self.name}"
+            model.columns = columns
+            model.values = values
+            model.save()
+            return output + ["dataset/" + str(model.id)]
         else:
-            samples = self.df[columns].sample(n=int(n_samples), weight=weight)
-
+            return ["table", [columns, values], None]
         # columns = samples.columns.values.tolist()
         # values = samples.values.tolist()
         # For later implementation of a full dataframe
-        output = self.greater_than_20(samples)
-
-        return output
 
 
 class NotebookHolder:
