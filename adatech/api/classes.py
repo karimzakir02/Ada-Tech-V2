@@ -1,11 +1,13 @@
 import pandas as pd
 import numpy as np
+from .models import Dataset
 
 
-class Data:
+class DatasetHolder:
 
-    def __init__(self, name, path=False, data=False, reset_index=True):
+    def __init__(self, name, author, path=False, data=False, reset_index=True):
         self.name = name
+        self.author = author
         if path:
             self.df = pd.read_csv(path)
         else:
@@ -28,7 +30,15 @@ class Data:
 
     def update_values(self):
         self.columns_info()
-        self.df_values = self.df.values.tolist()
+        # self.df_values = self.df.values.tolist()
+
+    def to_document(self):
+        dataset = Dataset()
+        dataset.id_name = self.name
+        dataset.author = self.author
+        dataset.columns = self.columns
+        dataset.values = self.df.values.tolist()
+        return dataset
 
     def greater_than_20(self, df):
         if len(df) > 20:
@@ -69,14 +79,12 @@ class Data:
         return output
 
 
-class NotebookClass:
+class NotebookHolder:
 
-    def __init__(self, name, author):
-        self.name = name
-        self.author = author
-        self.dataset_names = []
-        self.datasets = {}
-        self.columns = {}
+    def __init__(self, model):
+        self.datasets = model.datasets
+        self.dataset_names = model.dataset_names
+        self.columns = model.dataset_columns
         self.num_columns = {}
         self.object_columns = {}
 

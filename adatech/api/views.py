@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from django.core.files.storage import FileSystemStorage
 import json
 from rest_framework.decorators import api_view
-from .classes import NotebookClass, Data
+from .classes import NotebookHolder, DatasetHolder
 
 # from django.views import View
 # from django.shortcuts import render
@@ -39,14 +39,15 @@ class GetNotebookView(APIView):
     def get(self, request, format=None):
         id = request.GET.get(self.lookup_url_kwarg)
         if id is not None:
-            notebook = Notebook.objects.filter(id=id)
+            notebook = Notebook.objects(id=id)[0]
             if len(notebook) > 0:
-                data = NotebookSerializer(notebook[0]).data
-                data["id"] = id
+                data = NotebookSerializer(notebook).data
                 data["is_author"] = self.request.session.session_key == \
-                    notebook[0].author
-                df_list = request.session.get("df_list", [])
-                data["dataframes"] = json.dumps(df_list)
+                    notebook.author
+                # notebook_session = NotebookHolder(notebook)
+                # notebooks = request.session.get("notebooks", {})
+                # notebooks[f"{id}_notebook"] = notebook_session
+                # request.session["notebooks"] = notebooks
                 return Response(data, status=status.HTTP_200_OK)
             return Response({"Notebook not found": "Notebook does not exist"},
                             status=status.HTTP_404_NOT_FOUND)
@@ -58,30 +59,34 @@ class AnalysisClass():
 
     @api_view(('POST',))
     def file_upload(request):
+        # The first thing to do would be to make sure that the Data is saved
+        # as an embedded document in the notebook
+        # Perhaps have a function within the data class that just converts
+        # the class automatically to what you need to embed the document
+        # There is also a different way to doing this, using the data model
+        # itself
+        # The only way to do this is using the actual model stoopid
         id = request.data.get("id")
-        notebook = Notebook.objects.get(id=id)
+        notebook = Notebook.objects(id=id)[0]
         file_entry = request.FILES.getlist("file")[0]
-        # TODO: return a response for when no files were placed
-        # user cancelled his shit
+        # TODO: return a response for when no files were placed, user cancelled
         fs = FileSystemStorage()
-        name = fs.save(file_entry.name, file_entry)
+        id_name = fs.save(file_entry.name, file_entry)
         df_name = file_entry.name
-        path = fs.path(name)
-        df_class = Data(df_name, path)
-        fs.delete(name)
-        output = json.loads(notebook.output)
-        new_output = df_class.initial_output()
-        output.append(new_output)
-        notebook.output = json.dumps(output)
-        notebook.save()
-        request.session[f"{id}_notebook"].add_dataset(df_name, df_class)
-        dataset_list = request.session[f"{id}_notebook"].dataset_names
+        path = fs.path(id_name)
+        dataset = DatasetHolder(df_name, id_name, notebook.author, path)
+        dataset_document = dataset.to_document()
+        # This line creates trouble:
+        notebook.datasets.append(dataset_document)
+        fs.delete(id_name)
+        output = dataset.initial_output()
+        notebook.output.append(output)
         data = NotebookSerializer(notebook).data
-        data["dataframes"] = json.dumps(dataset_list)
+        notebook.save()
         return Response(data, status=status.HTTP_200_OK)
 
     @api_view(('POST',))
     def random_samples(request):
         return Response({"output": "Random Samples got called",
-                        "dataframes": "dataframes"},
+                         "dataframes": "dataframes"},
                         status=status.HTTP_200_OK)

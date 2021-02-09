@@ -57,8 +57,8 @@ export default class Notebook extends Component {
 
   updateState(data) {
     this.setState({
-      output: JSON.parse(data.output),
-      dataframes: JSON.parse(data.dataframes),
+      output: data.output,
+      dataframes: data.datasets,
     });
     this.insertOutput(data);
   }
