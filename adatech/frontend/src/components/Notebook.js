@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import {render} from "react-dom";
 import Sidenav from "./Sidenav";
+import RandomSamplesModal from "./dataframe_options/modals/RandomSamplesModal"
 
 export default class Notebook extends Component {
   constructor(props){
@@ -13,6 +14,7 @@ export default class Notebook extends Component {
       isAuthor: false,
       output: [],
       dataframes: [],
+      columns: []
     }
     this.id = this.props.match.params.id;
     this.getNotebookDetails();
@@ -59,6 +61,7 @@ export default class Notebook extends Component {
     this.setState({
       output: data.output,
       dataframes: data.dataset_names,
+      columns: data.dataset_columns,
     });
     this.insertOutput(data);
   }
@@ -113,6 +116,9 @@ export default class Notebook extends Component {
           link.href = output[2];
           link.target = "_blank"
           link.textContent = "View Full Dataframe";
+          link.style.fontSize = "12pt";
+          link.className = "output";
+          link.style.paddingTop = "0";
           output_div.appendChild(link);
         }
         }
@@ -121,11 +127,13 @@ export default class Notebook extends Component {
 
   // For future: pass the function parameters within the fetch url
   // you'll be able to handle that in the urls later
+  // <RandomSamplesModal onOpen={this.modalOpen} id={this.state.id} dataframes={this.state.dataframes} func={this.updateState}/>
+
 
   render() {
     return (
       <div>
-        <Sidenav id={this.state.id} dataframes={this.state.dataframes} func={this.updateState}/>
+        <Sidenav id={this.state.id} dataframes={this.state.dataframes} func={this.updateState} columns={this.state.columns}/>
         <div class="row" style={{padding: "10px", paddingLeft: "15%"}}>
           <div class="col s11" style={{padding: "10px"}}>
             <div class="container" id = "output_div"></div>
@@ -139,6 +147,7 @@ export default class Notebook extends Component {
             </form>
           </div>
         </div>
+        <RandomSamplesModal id={this.state.id} dataframes={this.state.dataframes} func={this.updateState} columns={this.state.columns}/>
       </div>
     );
   }

@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from django.core.files.storage import FileSystemStorage
 import json
 from rest_framework.decorators import api_view
-from .classes import NotebookHolder, DatasetHolder
+from .Classes import NotebookHolder, DatasetHolder
 import pandas as pd
 
 # from django.views import View
@@ -100,10 +100,13 @@ class AnalysisClass():
         fs.delete(id_name)
         output = dataset.summary_output()
         notebook.output.append(output)
-        data = NotebookSerializer(notebook).data
+        columns_dict = {df_name: dataset.columns}
+        notebook.dataset_columns.update(columns_dict)
         notebook.save()
+        data = NotebookSerializer(notebook).data
         serialized_data = DatasetSerializer(dataset_document).data
         request.session[f"{id}_{df_name}"] = serialized_data
+        print(data)
         return Response(data, status=status.HTTP_200_OK)
 
     @api_view(('POST',))
@@ -113,11 +116,12 @@ class AnalysisClass():
         id = request.data.get("id")
         dataset_name = request.data.get("dataset")
         n = request.data.get("number")
+        columns = json.loads(request.data.get("columns"))
+        random_state = request.data.get("random_state")
         dataset_document = request.session.get(f"{id}_{dataset_name}", None)
         dataset = DatasetHolder(dataset_document)
-        output = dataset.random_samples(n)
+        output = dataset.random_samples(n, columns, random_state)
         notebook = Notebook.objects(id=id)[0]
-        print(output[2])
         notebook.output.append(output)
         data = NotebookSerializer(notebook).data
         notebook.save()

@@ -37,7 +37,7 @@ export default class HomePage extends Component {
                 <h5 class ="header light left">Use datas power to the fullest with Ada</h5>
                 </div>
                 <div class="row center">
-                    <a onClick={this.handleButtonPressed} class="btn-large waves-effect waves-light brand-color">Get Started</a>
+                    <a onClick={this.handleButtonPressed} class="btn-large waves-effect waves-light primary-color">Get Started</a>
                 </div>
               </div>
             </div>

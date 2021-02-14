@@ -10,7 +10,7 @@ export class Navbar extends Component {
     }
     return(
       <nav class="navbar" style = {styles}>
-        <div class="nav-wrapper brand-color">
+        <div class="nav-wrapper primary-color">
           <div class="container">
             <a href="#" class="brand-logo">Ada Tech.</a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">

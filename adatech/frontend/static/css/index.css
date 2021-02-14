@@ -42,12 +42,20 @@ div {
   height: 100%;
   display: block;
 }
-.brand-color {
+.primary-color {
   background-color: #0f3741;
+}
+
+.secondary-color {
+  background-color: #790604;
 }
 
 .valign-wrapper {
   min-height: calc(100vh - 30px);
+}
+
+.modal-valign-wrapper {
+  min-height: calc(43vh - 30px);
 }
 
 .valign {
@@ -65,4 +73,8 @@ div {
   width: auto;
   clear: both;
   margin: 15px;
+}
+
+.dropdown-content {
+  max-height: 375%;
 }

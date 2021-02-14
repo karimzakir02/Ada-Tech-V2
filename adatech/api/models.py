@@ -20,5 +20,5 @@ class Notebook(Document):
     dataset_names = fields.ListField()
     # Maybe combine the above two into a dictionairy? That would cause problems
     # in the frontend
-    # dataset_columns = fields.DictField()
+    dataset_columns = fields.DictField()
     output = fields.ListField()

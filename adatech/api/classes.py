@@ -48,15 +48,12 @@ class DatasetHolder:
         basic_values.extend(last5.values.tolist())
         return ["table", [df.columns.values.tolist(), basic_values]]
 
-    def random_samples(self, n_samples, columns=None, weight=None):
-        # if weight is not None:
-        #     weight = self.df[weight]
-        #
-        # if n_samples < 1:
-        #     samples = self.df[columns].sample(frac=n_samples, weight=weight)
-        # else:
-        #    samples = self.df[columns].sample(n=int(n_samples), weight=weight)
-        samples = self.df.sample(n=int(n_samples))
+    def random_samples(self, n, columns, random_state):
+        if random_state == "null":
+            rs = None
+        else:
+            rs = int(random_state)
+        samples = self.df[columns].sample(n=int(n), random_state=rs)
         columns = samples.columns.values.tolist()
         values = samples.values.tolist()
         if len(samples) > 20:
