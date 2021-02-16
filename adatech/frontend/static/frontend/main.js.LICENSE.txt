@@ -30,6 +30,10 @@
 
 /*! export DataframeOptions [provided] [no usage info] [missing usage info prevents renaming] */
 
+/*! export DescribeData [provided] [no usage info] [missing usage info prevents renaming] */
+
+/*! export DescribeDataModal [provided] [no usage info] [missing usage info prevents renaming] */
+
 /*! export Element [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*! export Element [provided] [no usage info] [provision prevents renaming (no use info)] -> ./node_modules/react-is/cjs/react-is.production.min.js .Element */
@@ -123,6 +127,10 @@
 /*! export Switch [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*! export Switch [provided] [no usage info] [missing usage info prevents renaming] -> ./node_modules/react-router/esm/react-router.js .Switch */
+
+/*! export UniqueValues [provided] [no usage info] [missing usage info prevents renaming] */
+
+/*! export UniqueValuesModal [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*! export __HistoryContext [provided] [no usage info] [missing usage info prevents renaming] */
 
@@ -562,6 +570,14 @@
   !*** ./node_modules/react/cjs/react.production.min.js ***!
   \********************************************************/
 
+/*!**********************************************************!*\
+  !*** ./src/components/dataframe_options/DescribeData.js ***!
+  \**********************************************************/
+
+/*!**********************************************************!*\
+  !*** ./src/components/dataframe_options/UniqueValues.js ***!
+  \**********************************************************/
+
 /*!***********************************************************!*\
   !*** ./src/components/dataframe_options/RandomSamples.js ***!
   \***********************************************************/
@@ -613,6 +629,14 @@
 /*!******************************************************************!*\
   !*** ./node_modules/mini-create-react-context/dist/esm/index.js ***!
   \******************************************************************/
+
+/*!**********************************************************************!*\
+  !*** ./src/components/dataframe_options/modals/DescribeDataModal.js ***!
+  \**********************************************************************/
+
+/*!**********************************************************************!*\
+  !*** ./src/components/dataframe_options/modals/UniqueValuesModal.js ***!
+  \**********************************************************************/
 
 /*!***********************************************************************!*\
   !*** ./src/components/dataframe_options/modals/RandomSamplesModal.js ***!

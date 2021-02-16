@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import {render} from "react-dom";
 import Sidenav from "./Sidenav";
 import RandomSamplesModal from "./dataframe_options/modals/RandomSamplesModal"
+import DescribeDataModal from "./dataframe_options/modals/DescribeDataModal"
+import UniqueValuesModal from "./dataframe_options/modals/UniqueValuesModal"
 
 export default class Notebook extends Component {
   constructor(props){
@@ -109,8 +111,11 @@ export default class Notebook extends Component {
             }
           div.appendChild(table);
         }
+        else if (output[0] == "text") {
+          div.innerHTML = output[1];
+        }
         output_div.appendChild(div);
-        if (output[2] != null){
+        if (output[2] != null) {
           var link = document.createElement("a");
           // Need to make a proper link here!
           link.href = output[2];
@@ -120,7 +125,7 @@ export default class Notebook extends Component {
           link.className = "output";
           link.style.paddingTop = "0";
           output_div.appendChild(link);
-        }
+          }
         }
       }
     }
@@ -144,10 +149,15 @@ export default class Notebook extends Component {
                 <input type="file" name="document" onChange={this.uploadFile} />
                 <i class="material-icons">add</i>
               </button>
+              <button style = {{backgroundColor: "#790604", marginTop: "20px"}} class = "btn-floating btn-file btn-large waves-effect waves-light" type = "submit">
+                <i class="material-icons">add_chart</i>
+              </button>
             </form>
           </div>
         </div>
         <RandomSamplesModal id={this.state.id} dataframes={this.state.dataframes} func={this.updateState} columns={this.state.columns}/>
+        <DescribeDataModal id={this.state.id} dataframes={this.state.dataframes} func={this.updateState} columns={this.state.columns}/>
+        <UniqueValuesModal id={this.state.id} dataframes={this.state.dataframes} func={this.updateState} columns={this.state.columns}/>
       </div>
     );
   }

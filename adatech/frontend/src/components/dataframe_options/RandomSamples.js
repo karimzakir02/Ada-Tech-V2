@@ -5,14 +5,12 @@ import {
   render
 } from "react-dom";
 import M from 'materialize-css'
-import RandomSamplesModal from "./modals/RandomSamplesModal"
 
 export class RandomSamples extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      show_modal: false,
       notebook_id: this.props.id,
       dataframes: this.props.dataframes,
       select_value: null,
@@ -76,7 +74,6 @@ export class RandomSamples extends Component {
   handleClick() {
     const csrf = this.getCookie("csrftoken");
     let formData = new FormData();
-    console.log(this.state.select_value);
     formData.append("id", this.state.notebook_id);
     formData.append("dataset", this.state.select_value);
     formData.append("number", this.state.input_value);
@@ -98,7 +95,7 @@ export class RandomSamples extends Component {
     render() {
       return(
           <li class="bold">
-            <a onClick={this.prepareComponent} class="collapsible-header waves-effect waves-teal white-text"><span style={{marginLeft: "10px"}}>Random Samples</span></a>
+            <a onClick={this.prepareComponent} class="collapsible-header white-text"><span style={{marginLeft: "10px"}}>Random Samples</span></a>
             <div class="collapsible-body">
                 <div class="row" style={{paddingTop: "6%", marginBottom:0}}>
                   <div class="input-field col s6" id="random_samples_select_field">

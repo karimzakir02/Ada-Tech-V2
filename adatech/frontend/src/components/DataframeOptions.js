@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import {render} from "react-dom";
 import RandomSamples from "./dataframe_options/RandomSamples"
+import DescribeData from "./dataframe_options/DescribeData"
+import UniqueValues from "./dataframe_options/UniqueValues"
 
 export class DataframeOptions extends Component {
 
@@ -21,6 +23,8 @@ export class DataframeOptions extends Component {
         </li>
         <ul class="collapsible collapsible-accordion">
           <RandomSamples id={this.props.id} dataframes={this.props.dataframes} func={this.props.func} columns={this.props.columns}/>
+          <DescribeData id={this.props.id} dataframes={this.props.dataframes} func={this.props.func} columns={this.props.columns}/>
+          <UniqueValues id={this.props.id} dataframes={this.props.dataframes} func={this.props.func} columns={this.props.columns}/>
         </ul>
       </div>
   )

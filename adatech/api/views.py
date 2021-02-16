@@ -72,6 +72,9 @@ class AnalysisClass():
 
     @staticmethod
     def dataset_to_document(id_name, author, path):
+        # Maybe there's a way to do this faster, by accesing particular chunks
+        # or reading particular lines and certain columns and recreating the
+        # output of the function and then asynch loading the rest of the data
         dataset = Dataset()
         dataset.id_name = id_name
         dataset.author = author
@@ -98,7 +101,8 @@ class AnalysisClass():
         notebook.dataset_ids.append(id_name)
         notebook.dataset_names.append(df_name)
         fs.delete(id_name)
-        output = dataset.summary_output()
+        output = dataset.initial_output(dataset_document.id)
+        print(output)
         notebook.output.append(output)
         columns_dict = {df_name: dataset.columns}
         notebook.dataset_columns.update(columns_dict)
@@ -106,7 +110,6 @@ class AnalysisClass():
         data = NotebookSerializer(notebook).data
         serialized_data = DatasetSerializer(dataset_document).data
         request.session[f"{id}_{df_name}"] = serialized_data
-        print(data)
         return Response(data, status=status.HTTP_200_OK)
 
     @api_view(('POST',))
@@ -121,6 +124,36 @@ class AnalysisClass():
         dataset_document = request.session.get(f"{id}_{dataset_name}", None)
         dataset = DatasetHolder(dataset_document)
         output = dataset.random_samples(n, columns, random_state)
+        notebook = Notebook.objects(id=id)[0]
+        notebook.output.append(output)
+        data = NotebookSerializer(notebook).data
+        notebook.save()
+        return Response(data, status=status.HTTP_200_OK)
+
+    @api_view(("POST",))
+    def describe_data(request):
+        id = request.data.get("id")
+        dataset_name = request.data.get("dataset")
+        columns = json.loads(request.data.get("columns"))
+        percentiles = request.data.get("percentiles")
+        dataset_document = request.session.get(f"{id}_{dataset_name}", None)
+        dataset = DatasetHolder(dataset_document)
+        output = dataset.describe_data(columns, percentiles)
+        notebook = Notebook.objects(id=id)[0]
+        notebook.output.append(output)
+        data = NotebookSerializer(notebook).data
+        notebook.save()
+        return Response(data, status=status.HTTP_200_OK)
+
+    @api_view(("POST", ))
+    def unique_values(request):
+        id = request.data.get("id")
+        dataset_name = request.data.get("dataset")
+        column = request.data.get("column")
+        count = json.loads(request.data.get("count"))
+        dataset_document = request.session.get(f"{id}_{dataset_name}", None)
+        dataset = DatasetHolder(dataset_document)
+        output = dataset.unique_values(column, count)
         notebook = Notebook.objects(id=id)[0]
         notebook.output.append(output)
         data = NotebookSerializer(notebook).data
