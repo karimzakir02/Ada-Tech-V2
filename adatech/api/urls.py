@@ -14,6 +14,7 @@ urlpatterns = [
     path("random-samples", AnalysisClass.random_samples),
     path("describe-data", AnalysisClass.describe_data),
     path("unique-values", AnalysisClass.unique_values),
+    path("find-nans", AnalysisClass.find_nans),
 ]
 
 if settings.DEBUG:

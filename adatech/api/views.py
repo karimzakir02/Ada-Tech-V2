@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from django.core.files.storage import FileSystemStorage
 import json
 from rest_framework.decorators import api_view
-from .Classes import NotebookHolder, DatasetHolder
+from .Classes import DatasetHolder
 import pandas as pd
 
 # from django.views import View
@@ -63,9 +63,10 @@ class GetDatasetView(APIView):
     def get(self, request, format=None):
         id = request.GET.get(self.lookup_url_kwarg)
         if id is not None:
-            dataset = Dataset.objects(id=id)[0]
-            data = DatasetSerializer(dataset).data
-            return Response(data, status=status.HTTP_200_OK)
+            dataset_document = Dataset.objects(id=id)[0]
+            dataset = DatasetHolder(dataset_document)
+            output = dataset.full_output()
+            return Response(output, status=status.HTTP_200_OK)
 
 
 class AnalysisClass():
@@ -102,7 +103,6 @@ class AnalysisClass():
         notebook.dataset_names.append(df_name)
         fs.delete(id_name)
         output = dataset.initial_output(dataset_document.id)
-        print(output)
         notebook.output.append(output)
         columns_dict = {df_name: dataset.columns}
         notebook.dataset_columns.update(columns_dict)
@@ -154,6 +154,22 @@ class AnalysisClass():
         dataset_document = request.session.get(f"{id}_{dataset_name}", None)
         dataset = DatasetHolder(dataset_document)
         output = dataset.unique_values(column, count)
+        notebook = Notebook.objects(id=id)[0]
+        notebook.output.append(output)
+        data = NotebookSerializer(notebook).data
+        notebook.save()
+        return Response(data, status=status.HTTP_200_OK)
+
+    @api_view(("POST", ))
+    def find_nans(request):
+        id = request.data.get("id")
+        dataset_name = request.data.get("dataset")
+        columns = json.loads(request.data.get("columns"))
+        custom_symbol = json.loads(request.data.get("custom_symbol"))
+        custom_symbol_value = request.data.get("custom_symbol_value")
+        dataset_document = request.session.get(f"{id}_{dataset_name}", None)
+        dataset = DatasetHolder(dataset_document)
+        output = dataset.find_nans(columns, custom_symbol, custom_symbol_value)
         notebook = Notebook.objects(id=id)[0]
         notebook.output.append(output)
         data = NotebookSerializer(notebook).data

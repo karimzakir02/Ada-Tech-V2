@@ -12,7 +12,6 @@ export class UniqueValues extends Component {
     super(props);
     this.state = {
       notebook_id: this.props.id,
-      dataframes: this.props.dataframes,
       select_dataset_value: null,
       select_column_value: null,
     }
@@ -21,11 +20,6 @@ export class UniqueValues extends Component {
     this.handleColumnSelectChange = this.handleColumnSelectChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
   };
-
-  async componentDidMount() {
-    this.prepareComponent();
-    M.AutoInit();
-  }
 
   getCookie(name) {
     var cookieValue = null;
@@ -49,8 +43,8 @@ export class UniqueValues extends Component {
   createDatasetSelect() {
     var select = document.getElementById("unique_values_select");
     select.innerHTML = "";
-    for (var dataframe of this.props.dataframes) {
-      select.options.add(new Option(dataframe, dataframe));
+    for (var dataset of this.props.datasets) {
+      select.options.add(new Option(dataset, dataset));
     }
     select.selectedIndex = 0;
     var select_value = select.value
@@ -75,14 +69,15 @@ export class UniqueValues extends Component {
 
   handleSelectChange(event) {
     this.setState({
-      select_value: event.target.value,
-    })
+      select_dataset_value: event.target.value,
+    });
+    this.createColumnSelect(event.target.value);
   }
 
   handleColumnSelectChange(event) {
     this.setState({
       select_column_value: event.target.value,
-    })
+    });
   }
 
   handleClick() {
@@ -99,9 +94,8 @@ export class UniqueValues extends Component {
     };
     fetch("/api/unique-values", requestOptions)
     .then((response) => response.json())
-    .then((data) => this.props.func(data))
+    .then((data) => this.props.updateState(data))
   }
-
 
   // TODO: See if it would be possible to later set the value of the above input to 5
 

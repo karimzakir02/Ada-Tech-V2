@@ -12,18 +12,12 @@ export class DescribeData extends Component {
     super(props);
     this.state = {
       notebook_id: this.props.id,
-      dataframes: this.props.dataframes,
-      select_value: null,
+      select_dataset_value: null,
     }
     this.prepareComponent = this.prepareComponent.bind(this);
     this.handleSelectChange = this.handleSelectChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
   };
-
-  async componentDidMount() {
-    this.prepareComponent();
-    M.AutoInit();
-  }
 
   getCookie(name) {
     var cookieValue = null;
@@ -47,19 +41,19 @@ export class DescribeData extends Component {
   createSelect() {
     var select = document.getElementById("describe_data_select");
     select.innerHTML = "";
-    for (var dataframe of this.props.dataframes) {
-      select.options.add(new Option(dataframe, dataframe));
+    for (var dataset of this.props.datasets) {
+      select.options.add(new Option(dataset, dataset));
     }
     select.options[0].selected = true;
     this.setState({
-      select_value: select.options[0].value
+      select_dataset_value: select.options[0].value
     })
     M.FormSelect.init(select);
   }
 
   handleSelectChange(event) {
     this.setState({
-      select_value: event.target.value,
+      select_dataset_value: event.target.value,
     })
   }
 
@@ -67,8 +61,8 @@ export class DescribeData extends Component {
     const csrf = this.getCookie("csrftoken");
     let formData = new FormData();
     formData.append("id", this.state.notebook_id);
-    formData.append("dataset", this.state.select_value);
-    formData.append("columns", JSON.stringify(this.props.columns[this.state.select_value]));
+    formData.append("dataset", this.state.select_dataset_value);
+    formData.append("columns", JSON.stringify(this.props.columns[this.state.select_dataset_value]));
     formData.append("percentiles", null)
     const requestOptions = {
       method: "POST",
@@ -77,7 +71,7 @@ export class DescribeData extends Component {
     };
     fetch("/api/describe-data", requestOptions)
     .then((response) => response.json())
-    .then((data) => this.props.func(data))
+    .then((data) => this.props.updateState(data))
   }
 
     render() {

@@ -18,9 +18,7 @@ export class UniqueValuesModal extends Component {
     this.state = {
       count: 0,
       notebook_id: this.props.id,
-      datasets: this.props.dataframes,
-      columns: this.props.columns,
-      select_dataset_value: this.props.dataframes[0],
+      select_dataset_value: this.props.datasets[0],
       select_column_value: null,
       checkbox_count_value: false,
     }
@@ -34,11 +32,6 @@ export class UniqueValuesModal extends Component {
     this.handleOpen = this.handleOpen.bind(this);
     this.handleClose = this.handleClose.bind(this);
   };
-
-  async componentDidMount() {
-    this.prepareComponent();
-    M.AutoInit();
-  }
 
   getCookie(name) {
     var cookieValue = null;
@@ -63,8 +56,8 @@ export class UniqueValuesModal extends Component {
   createDatasetSelect() {
     var select = document.getElementById("unique_values_modal_select");
     select.innerHTML = "";
-    for (var dataframe of this.props.dataframes) {
-      select.options.add(new Option(dataframe, dataframe));
+    for (var dataset of this.props.datasets) {
+      select.options.add(new Option(dataset, dataset));
     }
     select.selectedIndex = 0;
     var select_value = select.value
@@ -108,7 +101,6 @@ export class UniqueValuesModal extends Component {
     else {
       new_value = false;
     }
-    console.log(new_value);
     this.setState({
       checkbox_count_value: new_value
     });
@@ -128,12 +120,12 @@ export class UniqueValuesModal extends Component {
     };
     fetch("/api/unique-values", requestOptions)
     .then((response) => response.json())
-    .then((data) => this.props.func(data))
+    .then((data) => this.props.updateState(data))
   }
 
   handleOpen(e) {
     var modal = document.getElementById("unique_values_modal");
-    if ((e.target == modal) && (this.state.count==0)){
+    if ((e.target == modal) && (this.state.count == 0)){
       this.setState({
         count: 1,
       });

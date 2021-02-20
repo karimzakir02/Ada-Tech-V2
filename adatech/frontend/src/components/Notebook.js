@@ -4,6 +4,7 @@ import Sidenav from "./Sidenav";
 import RandomSamplesModal from "./dataframe_options/modals/RandomSamplesModal"
 import DescribeDataModal from "./dataframe_options/modals/DescribeDataModal"
 import UniqueValuesModal from "./dataframe_options/modals/UniqueValuesModal"
+import FindNansModal from "./dataframe_options/modals/FindNansModal"
 
 export default class Notebook extends Component {
   constructor(props){
@@ -15,8 +16,8 @@ export default class Notebook extends Component {
       id: this.props.match.params.id,
       isAuthor: false,
       output: [],
-      dataframes: [],
-      columns: []
+      datasets: [],
+      columns: [],
     }
     this.id = this.props.match.params.id;
     this.getNotebookDetails();
@@ -62,7 +63,7 @@ export default class Notebook extends Component {
   updateState(data) {
     this.setState({
       output: data.output,
-      dataframes: data.dataset_names,
+      datasets: data.dataset_names,
       columns: data.dataset_columns,
     });
     this.insertOutput(data);
@@ -78,10 +79,10 @@ export default class Notebook extends Component {
       output_div.style.paddingLeft = "20%";
     }
     else {
+      output_div.style.paddingLeft = 0;
       for (var output of this.state.output) {
         var div = document.createElement("div");
-        div.className = "output"
-        div.className += " section";
+        div.className = "output section"
         if (output[0] == "table") {
           var table_data = output[1];
           var table_headings = table_data[0];
@@ -130,18 +131,13 @@ export default class Notebook extends Component {
       }
     }
 
-  // For future: pass the function parameters within the fetch url
-  // you'll be able to handle that in the urls later
-  // <RandomSamplesModal onOpen={this.modalOpen} id={this.state.id} dataframes={this.state.dataframes} func={this.updateState}/>
-
-
   render() {
     return (
       <div>
-        <Sidenav id={this.state.id} dataframes={this.state.dataframes} func={this.updateState} columns={this.state.columns}/>
+        <Sidenav id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
         <div class="row" style={{padding: "10px", paddingLeft: "15%"}}>
           <div class="col s11" style={{padding: "10px"}}>
-            <div class="container" id = "output_div"></div>
+            <div class="container" id="output_div"></div>
           </div>
           <div class="col s1">
             <form class="pushpin-buttons pinned" method="POST" enctype = "multipart/form-data" style = {{marginLeft: "8px", paddingTop: "15px"}}>
@@ -155,9 +151,10 @@ export default class Notebook extends Component {
             </form>
           </div>
         </div>
-        <RandomSamplesModal id={this.state.id} dataframes={this.state.dataframes} func={this.updateState} columns={this.state.columns}/>
-        <DescribeDataModal id={this.state.id} dataframes={this.state.dataframes} func={this.updateState} columns={this.state.columns}/>
-        <UniqueValuesModal id={this.state.id} dataframes={this.state.dataframes} func={this.updateState} columns={this.state.columns}/>
+        <RandomSamplesModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
+        <DescribeDataModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
+        <UniqueValuesModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
+        <FindNansModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
       </div>
     );
   }

@@ -6,18 +6,18 @@ import {
 } from "react-dom";
 import M from 'materialize-css'
 
-export class RandomSamples extends Component {
+export class FindNans extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
       notebook_id: this.props.id,
       select_dataset_value: null,
-      input_n_value: null,
+      select_columns_value: null,
     }
     this.prepareComponent = this.prepareComponent.bind(this);
     this.handleSelectChange = this.handleSelectChange.bind(this);
-    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleColumnSelectChange = this.handleColumnSelectChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
   };
 
@@ -37,19 +37,37 @@ export class RandomSamples extends Component {
   }
 
   prepareComponent() {
-    this.createSelect();
+    this.createDatasetSelect();
   }
 
-  createSelect() {
-    var select = document.getElementById("random_samples_select");
+  createDatasetSelect() {
+    var select = document.getElementById("find_nans_select");
     select.innerHTML = "";
     for (var dataset of this.props.datasets) {
       select.options.add(new Option(dataset, dataset));
     }
-    select.options[0].selected = true;
+    select.selectedIndex = 0;
+    var select_value = select.value
     this.setState({
-      select_dataset_value: select.options[0].value
-    })
+      select_dataset_value: select_value,
+    });
+    M.FormSelect.init(select);
+    this.createColumnSelect(select.value);
+  }
+
+  createColumnSelect(select_value) {
+    var select = document.getElementById("find_nans_column_select");
+    var selected = []
+    select.innerHTML = "";
+    for (var column of this.props.columns[select_value]) {
+      select.options.add(new Option(column, column));
+    }
+    for (var i=0; i < this.props.columns[select_value].length; i++){
+      select.options[i].selected = true;
+    }
+    this.setState({
+      select_columns_value: this.props.columns[select_value],
+    });
     M.FormSelect.init(select);
   }
 
@@ -57,12 +75,20 @@ export class RandomSamples extends Component {
     this.setState({
       select_dataset_value: event.target.value,
     })
+    this.createColumnSelect(event.target.value);
   }
 
-  handleInputChange(event){
+  handleColumnSelectChange(event) {
+    var select = event.target
+    var selected = []
+    for (var i=0; i<select.options.length; i++) {
+      if (select.options[i].selected == true) {
+        selected.push(select.options[i].value);
+      }
+    }
     this.setState({
-      input_n_value: event.target.value
-    })
+      select_columns_value: selected
+    });
   }
 
   handleClick() {
@@ -70,39 +96,40 @@ export class RandomSamples extends Component {
     let formData = new FormData();
     formData.append("id", this.state.notebook_id);
     formData.append("dataset", this.state.select_dataset_value);
-    formData.append("number", this.state.input_n_value);
-    formData.append("columns", JSON.stringify(this.props.columns[this.state.select_dataset_value]));
-    formData.append("random_state", null);
+    formData.append("columns", JSON.stringify(this.state.select_columns_value));
+    formData.append("custom_symbol", JSON.stringify(false));
+    formData.append("custom_symbol_value", "");
     const requestOptions = {
       method: "POST",
       headers: {csrf: csrf},
       body: formData,
     };
-    fetch("/api/random-samples", requestOptions)
+    fetch("/api/find-nans", requestOptions)
     .then((response) => response.json())
     .then((data) => this.props.updateState(data))
   }
+
 
   // TODO: See if it would be possible to later set the value of the above input to 5
 
     render() {
       return(
           <li class="bold">
-            <a onClick={this.prepareComponent} class="collapsible-header white-text"><span style={{marginLeft: "10px"}}>Random Samples</span></a>
+            <a onClick={this.prepareComponent} class="collapsible-header white-text"><span style={{marginLeft: "10px"}}>Find Missing Values</span></a>
             <div class="collapsible-body">
                 <div class="row" style={{paddingTop: "6%", marginBottom:0}}>
-                  <div class="input-field col s6" id="random_samples_select_field">
-                    <select id="random_samples_select" onChange={this.handleSelectChange}></select>
-                    <label>Dataframes</label>
+                  <div class="input-field col s6" id="find_nans_select_field">
+                    <select id="find_nans_select" onChange={this.handleSelectChange}></select>
+                    <label>Dataframe:</label>
                   </div>
-                  <div class="input-field col s6" id="random_samples_input_field">
-                    <input id="random_samples_input" type="text" onChange={this.handleInputChange} />
-                    <label class="active" for="random_samples_input">Number of Samples:</label>
+                  <div class="input-field col s6" id="find_nans_column_select_field">
+                    <select multiple id="find_nans_column_select" onChange={this.handleColumnSelectChange}></select>
+                    <label>Columns:</label>
                   </div>
                 </div>
                 <div class="divider"></div>
                 <div class="section" style={{paddingTop: "4%", paddingRight: "1%"}}>
-                  <button class="btn-flat modal-trigger" href="#random_samples_modal">Advanced</button>
+                  <button class="btn-flat modal-trigger" href="#find_nans_modal">Advanced</button>
                   <button style={{marginLeft: "32%"}} onClick={this.handleClick} class="btn waves-effect waves-teal secondary-color" type="submit">Confirm</button>
                 </div>
             </div>
@@ -111,4 +138,4 @@ export class RandomSamples extends Component {
   }
 }
 
-export default RandomSamples;
+export default FindNans;

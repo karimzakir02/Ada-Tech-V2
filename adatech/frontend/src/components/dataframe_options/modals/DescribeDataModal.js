@@ -18,10 +18,8 @@ export class DescribeDataModal extends Component {
     this.state = {
       count: 0,
       notebook_id: this.props.id,
-      datasets: this.props.dataframes,
-      columns: this.props.columns,
-      select_dataset_value: this.props.dataframes[0],
-      select_column_value: null,
+      select_dataset_value: this.props.datasets[0],
+      select_columns_value: null,
       input_percentiles_value: null,
     }
     this.prepareComponent = this.prepareComponent.bind(this);
@@ -34,11 +32,6 @@ export class DescribeDataModal extends Component {
     this.handleOpen = this.handleOpen.bind(this);
     this.handleClose = this.handleClose.bind(this);
   };
-
-  async componentDidMount() {
-    this.prepareComponent();
-    M.AutoInit();
-  }
 
   getCookie(name) {
     var cookieValue = null;
@@ -57,14 +50,13 @@ export class DescribeDataModal extends Component {
 
   prepareComponent() {
     this.createDatasetSelect();
-    // this.createColumnSelect();
   }
 
   createDatasetSelect() {
     var select = document.getElementById("describe_data_modal_select");
     select.innerHTML = "";
-    for (var dataframe of this.props.dataframes) {
-      select.options.add(new Option(dataframe, dataframe));
+    for (var dataset of this.props.datasets) {
+      select.options.add(new Option(dataset, dataset));
     }
     select.selectedIndex = 0;
     var select_value = select.value
@@ -85,7 +77,7 @@ export class DescribeDataModal extends Component {
       select.options[i].selected = true;
     }
     this.setState({
-      select_column_value: this.props.columns[select_value],
+      select_columns_value: this.props.columns[select_value],
     });
     M.FormSelect.init(select);
   }
@@ -106,7 +98,7 @@ export class DescribeDataModal extends Component {
       }
     }
     this.setState({
-      select_column_value: selected
+      select_columns_value: selected
     });
   }
 
@@ -121,7 +113,7 @@ export class DescribeDataModal extends Component {
     let formData = new FormData();
     formData.append("id", this.state.notebook_id);
     formData.append("dataset", this.state.select_dataset_value);
-    formData.append("columns", JSON.stringify(this.state.select_column_value));
+    formData.append("columns", JSON.stringify(this.state.select_columns_value));
     formData.append("percentiles", this.state.input_percentiles_value);
     const requestOptions = {
       method: "POST",
@@ -130,7 +122,7 @@ export class DescribeDataModal extends Component {
     };
     fetch("/api/describe-data", requestOptions)
     .then((response) => response.json())
-    .then((data) => this.props.func(data))
+    .then((data) => this.props.updateState(data))
   }
 
   handleOpen(e) {

@@ -7,17 +7,7 @@ import MachineLearningOptions from "./MachineLearningOptions";
 export class Sidenav extends Component {
   constructor(props){
     super(props);
-    this.state = {
-      dataframes: this.props.dataframes,
-    }
   }
-
-  // componentWillReceiveProps(nextProps) {
-  //     this.setState({
-  //       dataframes: nextProps.dataframes,
-  //     });
-  //     console.log(this.state.dataframes);
-  // }
 
   render() {
     return (
@@ -34,7 +24,7 @@ export class Sidenav extends Component {
                 <li class = "tab col s4"><a href = "#ml" style = {{color: "white"}}>Models</a></li>
               </ul>
             </div>
-            <DataframeOptions id={this.props.id} dataframes={this.props.dataframes} func={this.props.func} columns={this.props.columns}/>
+            <DataframeOptions id={this.props.id} datasets={this.props.datasets} updateState={this.props.updateState} columns={this.props.columns}/>
             <StatisticsOptions />
             <MachineLearningOptions />
           </div>
