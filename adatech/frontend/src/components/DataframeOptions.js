@@ -4,6 +4,7 @@ import RandomSamples from "./dataframe_options/RandomSamples"
 import DescribeData from "./dataframe_options/DescribeData"
 import UniqueValues from "./dataframe_options/UniqueValues"
 import FindNans from "./dataframe_options/FindNans"
+import HandleNans from "./dataframe_options/HandleNans"
 
 export class DataframeOptions extends Component {
 
@@ -23,6 +24,7 @@ export class DataframeOptions extends Component {
           <DescribeData id={this.props.id} datasets={this.props.datasets} updateState={this.props.updateState} columns={this.props.columns}/>
           <UniqueValues id={this.props.id} datasets={this.props.datasets} updateState={this.props.updateState} columns={this.props.columns}/>
           <FindNans id={this.props.id} datasets={this.props.datasets} updateState={this.props.updateState} columns={this.props.columns}/>
+          <HandleNans id={this.props.id} datasets={this.props.datasets} updateState={this.props.updateState} columns={this.props.columns}/>
         </ul>
       </div>
   )

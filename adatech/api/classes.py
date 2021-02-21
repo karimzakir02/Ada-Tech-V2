@@ -6,7 +6,7 @@ from .models import Dataset
 class DatasetHolder:
 
     def __init__(self, model):
-        self.id_name = model["id_name"]
+        self.id = str(model["id"])
         self.name = model["name"]
         self.author = model["author"]
         self.columns = model["columns"]
@@ -27,18 +27,17 @@ class DatasetHolder:
         # self.df_values = self.df.values.tolist()
 
     def to_document(self):
-        dataset = Dataset()
-        dataset.id_name = self.id_name
-        dataset.author = self.author
-        dataset.columns = self.columns
-        dataset.values = self.df.values.tolist()
-        return dataset
+        document = Dataset()
+        document.id_name = self.id_name
+        document.author = self.author
+        document.columns = self.columns
+        document.values = self.df.values.tolist()
+        return document
 
-    def initial_output(self, id):
-        # TODO: Handle for replacing missing data
+    def initial_output(self):
         if len(self.df) > 20:
             output = self.summary_output(self.df)
-            return output + ["dataset/" + str(id)]
+            return output + ["dataset/" + self.id]
         else:
             df = self.df.fillna("NaN")
             return ["table", [self.columns, df.values.tolist()], None]
@@ -68,15 +67,14 @@ class DatasetHolder:
         columns = samples.columns.values.tolist()
         values = samples.values.tolist()
         if len(samples) > 20:
-            # Needs to be a link, not the other thing
             output = self.summary_output(samples)
-            model = Dataset()
-            model.id_name = f"{self.author}_samples_{self.id_name}"
-            model.name = f"samples_{self.name}"
-            model.columns = columns
-            model.values = values
-            model.save()
-            return output + ["dataset/" + str(model.id)]
+            new_document = Dataset()
+            new_document.id_name = f"{self.author}_samples_{self.id_name}"
+            new_document.name = f"samples_{self.name}"
+            new_document.columns = columns
+            new_document.values = values
+            new_document.save()
+            return output + ["dataset/" + str(new_document.id)]
         else:
             return ["table", [columns, values], None]
 
@@ -111,8 +109,6 @@ class DatasetHolder:
             return ["text", output, None]
 
     def find_nans(self, cols, custom_symbol, custom_symbol_value):
-        print(custom_symbol)
-        print(custom_symbol_value)
         if custom_symbol:
             values = []
             columns = []
@@ -135,6 +131,10 @@ class DatasetHolder:
             missing_cols.insert(0, "")
             return ["table", [missing_cols, [missing_num]], None]
 
+    def handle_nans(self, cols, substitute):
+        self.df.fillna(substitute, inplace=True)
+        return self.initial_output(self.id)
+
 
 class NotebookHolder:
 
@@ -155,3 +155,14 @@ class NotebookHolder:
         self.columns[dataset_name] = columns[0]
         self.num_columns[dataset_name] = columns[1]
         self.object_columns[dataset_name] = columns[3]
+
+
+class DatasetHolder2(DatasetHolder):
+
+    def __init__(self, document):
+        self.id_name = document.id_name
+        self.name = document.name
+        self.author = document.author
+        self.columns = document.columns
+        self.values = document.values
+        self.df = pd.DataFrame(data=self.values, columns=self.columns)

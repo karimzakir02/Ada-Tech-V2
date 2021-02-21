@@ -6,8 +6,9 @@ from rest_framework.response import Response
 from django.core.files.storage import FileSystemStorage
 import json
 from rest_framework.decorators import api_view
-from .Classes import DatasetHolder
+from .Classes import DatasetHolder, DatasetHolder2
 import pandas as pd
+import time
 
 # from django.views import View
 # from django.shortcuts import render
@@ -45,6 +46,7 @@ class GetNotebookView(APIView):
                 data = NotebookSerializer(notebook).data
                 data["is_author"] = self.request.session.session_key == \
                     notebook.author
+                data["dataset_names"] = list(notebook.datasets.keys())
                 # notebook_session = NotebookHolder(notebook)
                 # notebooks = request.session.get("notebooks", {})
                 # notebooks[f"{id}_notebook"] = notebook_session
@@ -72,13 +74,13 @@ class GetDatasetView(APIView):
 class AnalysisClass():
 
     @staticmethod
-    def dataset_to_document(id_name, author, path):
+    def dataset_to_document(name, author, path):
         # Maybe there's a way to do this faster, by accesing particular chunks
         # or reading particular lines and certain columns and recreating the
         # output of the function and then asynch loading the rest of the data
         dataset = Dataset()
-        dataset.id_name = id_name
         dataset.author = author
+        dataset.name = name
         data = pd.read_csv(path)
         dataset.columns = data.columns.values.tolist()
         dataset.values = data.values.tolist()
@@ -94,20 +96,23 @@ class AnalysisClass():
         id_name = fs.save(file_entry.name, file_entry)
         df_name = file_entry.name
         path = fs.path(id_name)
-        dataset_document = AnalysisClass.dataset_to_document(id_name,
+        dataset_document = AnalysisClass.dataset_to_document(df_name,
                                                              notebook.author,
                                                              path)
         dataset_document.save()
         dataset = DatasetHolder(dataset_document)
-        notebook.dataset_ids.append(id_name)
-        notebook.dataset_names.append(df_name)
         fs.delete(id_name)
-        output = dataset.initial_output(dataset_document.id)
+        output = dataset.initial_output()
         notebook.output.append(output)
+        dataset_dict = {df_name: str(dataset_document.id)}
         columns_dict = {df_name: dataset.columns}
+        num_columns_dict = {df_name: dataset.numerical_columns}
+        notebook.datasets.update(dataset_dict)
         notebook.dataset_columns.update(columns_dict)
+        notebook.dataset_numerical_columns.update(num_columns_dict)
         notebook.save()
         data = NotebookSerializer(notebook).data
+        data["dataset_names"] = list(notebook.datasets.keys())
         serialized_data = DatasetSerializer(dataset_document).data
         request.session[f"{id}_{df_name}"] = serialized_data
         return Response(data, status=status.HTTP_200_OK)
@@ -126,8 +131,9 @@ class AnalysisClass():
         output = dataset.random_samples(n, columns, random_state)
         notebook = Notebook.objects(id=id)[0]
         notebook.output.append(output)
-        data = NotebookSerializer(notebook).data
         notebook.save()
+        data = NotebookSerializer(notebook).data
+        data["dataset_names"] = list(notebook.datasets.keys())
         return Response(data, status=status.HTTP_200_OK)
 
     @api_view(("POST",))
@@ -141,8 +147,9 @@ class AnalysisClass():
         output = dataset.describe_data(columns, percentiles)
         notebook = Notebook.objects(id=id)[0]
         notebook.output.append(output)
-        data = NotebookSerializer(notebook).data
         notebook.save()
+        data = NotebookSerializer(notebook).data
+        data["dataset_names"] = list(notebook.datasets.keys())
         return Response(data, status=status.HTTP_200_OK)
 
     @api_view(("POST", ))
@@ -156,8 +163,9 @@ class AnalysisClass():
         output = dataset.unique_values(column, count)
         notebook = Notebook.objects(id=id)[0]
         notebook.output.append(output)
-        data = NotebookSerializer(notebook).data
         notebook.save()
+        data = NotebookSerializer(notebook).data
+        data["dataset_names"] = list(notebook.datasets.keys())
         return Response(data, status=status.HTTP_200_OK)
 
     @api_view(("POST", ))
@@ -172,6 +180,23 @@ class AnalysisClass():
         output = dataset.find_nans(columns, custom_symbol, custom_symbol_value)
         notebook = Notebook.objects(id=id)[0]
         notebook.output.append(output)
-        data = NotebookSerializer(notebook).data
         notebook.save()
+        data = NotebookSerializer(notebook).data
+        data["dataset_names"] = list(notebook.datasets.keys())
+        return Response(data, status=status.HTTP_200_OK)
+
+    @api_view(("POST", ))
+    def handle_nans(request):
+        id = request.data.get("id")
+        dataset_name = request.data.get("dataset")
+        columns = request.data.get("columns")
+        substitute = request.data.get("substitute")
+        dataset_document = request.session.get(f"{id}_{dataset_name}", None)
+        dataset = DatasetHolder(dataset_document)
+        output = dataset.handle_hans(columns, substitute)
+        notebook = Notebook.objects(id=id)[0]
+        notebook.output.append(output)
+        notebook.save()
+        data = NotebookSerializer(notebook).data
+        data["dataset_names"] = list(notebook.datasets.keys())
         return Response(data, status=status.HTTP_200_OK)

@@ -18,6 +18,7 @@ export default class Notebook extends Component {
       output: [],
       datasets: [],
       columns: [],
+      numerical_columns: [],
     }
     this.id = this.props.match.params.id;
     this.getNotebookDetails();
@@ -65,6 +66,7 @@ export default class Notebook extends Component {
       output: data.output,
       datasets: data.dataset_names,
       columns: data.dataset_columns,
+      numerical_columns: data.dataset_numerical_columns,
     });
     this.insertOutput(data);
   }
@@ -152,7 +154,7 @@ export default class Notebook extends Component {
           </div>
         </div>
         <RandomSamplesModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
-        <DescribeDataModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
+        <DescribeDataModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.numerical_columns}/>
         <UniqueValuesModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
         <FindNansModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
       </div>
