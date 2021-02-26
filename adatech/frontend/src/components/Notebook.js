@@ -5,6 +5,7 @@ import RandomSamplesModal from "./dataframe_options/modals/RandomSamplesModal"
 import DescribeDataModal from "./dataframe_options/modals/DescribeDataModal"
 import UniqueValuesModal from "./dataframe_options/modals/UniqueValuesModal"
 import FindNansModal from "./dataframe_options/modals/FindNansModal"
+import HandleNansModal from "./dataframe_options/modals/HandleNansModal"
 
 export default class Notebook extends Component {
   constructor(props){
@@ -157,6 +158,7 @@ export default class Notebook extends Component {
         <DescribeDataModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.numerical_columns}/>
         <UniqueValuesModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
         <FindNansModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
+        <HandleNansModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
       </div>
     );
   }
