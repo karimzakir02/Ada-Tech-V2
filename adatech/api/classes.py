@@ -26,6 +26,12 @@ class DatasetHolder:
         self.columns_info()
         # self.df_values = self.df.values.tolist()
 
+    def update_document(self):
+        document = Dataset.objects(id=self.id)[0]
+        document.columns = self.df.columns.values.tolist()
+        document.values = self.df.values.tolist()
+        document.save()
+
     def to_document(self):
         document = Dataset()
         document.id_name = self.id_name
