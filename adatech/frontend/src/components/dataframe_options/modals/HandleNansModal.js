@@ -23,14 +23,40 @@ export class HandleNansModal extends Component {
       select_columns_value: null,
       checkbox_custom_symbol_value: false,
       input_custom_symbol_value: null,
+      checkbox_new_dataframe_value: false,
+      input_new_dataframe_value: null,
+
+      select_drop_by_value: "0",
+
+      input_substitute_value: "",
+
+      select_numerical_columns_value: null,
+
+      select_strategy_value: "mean",
+
+      chosen_option: "drop",
     }
     this.prepareComponent = this.prepareComponent.bind(this);
     this.createDatasetSelect = this.createDatasetSelect.bind(this);
     this.createColumnSelect = this.createColumnSelect.bind(this);
+
     this.handleSelectChange = this.handleSelectChange.bind(this);
     this.handleColumnSelectChange = this.handleColumnSelectChange.bind(this);
-    this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
+    this.handleCustomSymbolCheckboxChange = this.handleCustomSymbolCheckboxChange.bind(this);
     this.handleCustomSymbolInputChange = this.handleCustomSymbolInputChange.bind(this);
+    this.handleNewDataframeCheckboxChange = this.handleNewDataframeCheckboxChange.bind(this);
+    this.handleNewDataframeInputChange = this.handleNewDataframeInputChange.bind(this);
+
+    this.handleDropByChange = this.handleDropByChange.bind(this);
+
+    this.handleSubstituteChange = this.handleSubstituteChange.bind(this);
+
+    this.handleOptionChange = this.handleOptionChange.bind(this);
+
+    this.handleNumericalColumnSelectChange = this.handleNumericalColumnSelectChange.bind(this);
+
+    this.handleStrategySelectChange = this.handleStrategySelectChange.bind(this);
+
     this.handleClick = this.handleClick.bind(this);
     this.handleOpen = this.handleOpen.bind(this);
     this.handleClose = this.handleClose.bind(this);
@@ -56,33 +82,74 @@ export class HandleNansModal extends Component {
   }
 
   createDatasetSelect() {
-    var select = document.getElementById("find_nans_modal_select");
-    select.innerHTML = "";
-    for (var dataset of this.props.datasets) {
-      select.options.add(new Option(dataset, dataset));
+    var selects = document.getElementsByClassName("handle_nans_modal_select");
+    for (var select of selects) {
+      select.innerHTML = "";
+      for (var dataset of this.props.datasets) {
+        select.options.add(new Option(dataset, dataset));
+      }
+      select.selectedIndex = 0;
+      var select_value = select.value
+      M.FormSelect.init(select);
     }
-    select.selectedIndex = 0;
-    var select_value = select.value
     this.setState({
       select_dataset_value: select_value,
     });
-    M.FormSelect.init(select);
     this.createColumnSelect(select.value);
   }
 
   createColumnSelect(select_value) {
-    var select = document.getElementById("find_nans_modal_column_select");
-    select.innerHTML = "";
-    for (var column of this.props.columns[select_value]) {
-      select.options.add(new Option(column, column));
+    var selects = document.getElementsByClassName("handle_nans_modal_column_select");
+    for (var select of selects) {
+      select.innerHTML = "";
+      for (var column of this.props.columns[select_value]) {
+        select.options.add(new Option(column, column));
+      }
+      for (var i=0; i < this.props.columns[select_value].length; i++){
+        select.options[i].selected = true;
+      }
+      M.FormSelect.init(select);
     }
-    for (var i=0; i < this.props.columns[select_value].length; i++){
-      select.options[i].selected = true;
+
+    var numerical_selects = document.getElementsByClassName("handle_nans_modal_numerical_columns_select");
+    for (var select of numerical_selects) {
+      select.innerHTML = "";
+      for (var column of this.props.numerical_columns[select_value]) {
+        select.options.add(new Option(column, column));
+      }
+      for (var i=0; i < this.props.numerical_columns[select_value].length; i++){
+        select.options[i].selected = true;
+      }
+      M.FormSelect.init(select);
     }
     this.setState({
       select_columns_value: this.props.columns[select_value],
+      select_numerical_columns_value: this.props.numerical_columns[select_value]
     });
-    M.FormSelect.init(select);
+  }
+
+  handleOptionChange(event) {
+    this.setState({
+      chosen_option: event.target.innerHTML,
+    })
+  }
+
+  handleDropByChange(event) {
+    this.setState({
+      select_drop_by_value: event.target.value,
+    })
+  }
+
+  handleSubstituteChange(event) {
+    this.setState({
+      input_substitute_value: event.target.value,
+    })
+  }
+
+  handleStrategySelectChange(event) {
+    this.setState({
+      select_strategy_value: event.target.value,
+    });
   }
 
   handleSelectChange(event) {
@@ -105,26 +172,85 @@ export class HandleNansModal extends Component {
     });
   }
 
-  handleCheckboxChange(event) {
-    var new_value;
-    var text_input = document.getElementById("find_nans_modal_input");
-    if (event.target.checked) {
-      text_input.disabled = false;
-    }
-    else {
-      text_input.value = "";
-      text_input.disabled = true;
+  handleNumericalColumnSelectChange(event) {
+    var select = event.target
+    var selected = []
+    for (var i=0; i<select.options.length; i++) {
+      if (select.options[i].selected == true) {
+        selected.push(select.options[i].value);
+      }
     }
     this.setState({
-      checkbox_custom_symbol_value: event.target.checked,
+      select_numerical_columns_value: selected
     });
   }
 
+  handleCustomSymbolCheckboxChange(event) {
+    var text_inputs = document.getElementsByClassName("handle_nans_modal_custom_symbol_input");
+    for (var text_input of text_inputs) {
+      if (event.target.checked) {
+        text_input.disabled = false;
+      }
+      else {
+        text_input.value = "";
+        text_input.disabled = true;
+      }
+    }
+    var checkboxes = document.getElementsByClassName("handle_nans_modal_custom_symbol_checkbox");
+    for (var checkbox of checkboxes) {
+      checkbox.checked = event.target.checked;
+    }
+
+    this.setState({
+      checkbox_custom_symbol_value: event.target.checked,
+      input_custom_symbol_value: "",
+    });
+
+  }
+
   handleCustomSymbolInputChange(event) {
+    var text_inputs = document.getElementsByClassName("handle_nans_modal_custom_symbol_input");
+    for (var text_input of text_inputs) {
+      text_input.value = event.target.value;
+      M.updateTextFields();
+    }
     this.setState({
       input_custom_symbol_value: event.target.value
     })
   }
+
+  handleNewDataframeCheckboxChange(event) {
+    var text_inputs = document.getElementsByClassName("handle_nans_modal_new_dataframe_input");
+    for (var text_input of text_inputs) {
+      if (event.target.checked) {
+        text_input.disabled = false;
+      }
+      else {
+        text_input.value = "";
+        text_input.disabled = true;
+      }
+    }
+    this.setState({
+      checkbox_new_dataframe_value: event.target.checked,
+      input_new_dataframe_value: "",
+    })
+    var checkboxes = document.getElementsByClassName("handle_nans_modal_new_dataframe_checkbox");
+    for (var checkbox of checkboxes) {
+      checkbox.checked = event.target.checked;
+    }
+  }
+
+  handleNewDataframeInputChange(event) {
+    var text_inputs = document.getElementsByClassName("handle_nans_modal_new_dataframe_input");
+    for (var text_input of text_inputs) {
+      text_input.value = event.target.value;
+      M.updateTextFields();
+    }
+    this.setState({
+      input_new_dataframe_value: event.target.value
+    })
+  }
+
 
   handleClick() {
     const csrf = this.getCookie("csrftoken");
@@ -134,18 +260,30 @@ export class HandleNansModal extends Component {
     formData.append("columns", JSON.stringify(this.state.select_columns_value));
     formData.append("custom_symbol", JSON.stringify(this.state.checkbox_custom_symbol_value));
     formData.append("custom_symbol_value", this.state.input_custom_symbol_value);
+    formData.append("new_dataframe", JSON.stringify(this.state.checkbox_new_dataframe_value));
+    formData.append("new_dataframe_value", this.state.input_new_dataframe_value);
+
+    formData.append("handle_nans_option", this.state.chosen_option);
+    formData.append("drop_by", this.state.select_drop_by_value);
+
+    formData.append("substitute", this.state.input_substitute_value);
+
+    formData.append("strategy", this.state.select_strategy_value);
+    console.log(this.state.select_numerical_columns_value)
+    formData.append("numerical_columns", JSON.stringify(this.state.select_numerical_columns_value));
+
     const requestOptions = {
       method: "POST",
       headers: {csrf: csrf},
       body: formData,
     };
-    fetch("/api/find-nans", requestOptions)
+    fetch("/api/handle-nans", requestOptions)
     .then((response) => response.json())
     .then((data) => this.props.updateState(data))
   }
 
   handleOpen(e) {
-    var modal = document.getElementById("find_nans_modal");
+    var modal = document.getElementById("handle_nans_modal");
     if ((e.target == modal) && (this.state.count == 0)){
       this.setState({
         count: 1,
@@ -155,7 +293,7 @@ export class HandleNansModal extends Component {
   }
 
   handleClose(e) {
-    var modal = document.getElementById("find_nans_modal");
+    var modal = document.getElementById("handle_nans_modal");
     if (modal == e.target) {
       if (modal.classList.contains("open") == false){
         this.setState({
@@ -167,12 +305,12 @@ export class HandleNansModal extends Component {
 
     render() {
       return(
-        <div class="modal modal-fixed-footer" id="handle_nans_modal" onFocus={this.handleOpen} onBlur={this.handleClose}>
+        <div class="modal" id="handle_nans_modal" onFocus={this.handleOpen} onBlur={this.handleClose}>
           <div class="modal-content">
-            <h4>Find Missing Values</h4>
+            <h4>Handle Missing Values</h4>
             <div class="divider"></div>
             <div class="row">
-              <div class="col s6" style={{paddingTop: "5vh"}}>
+              <div class="col s6" style={{paddingTop: "10vh"}}>
                 <div class="valign-wrapper modal-valign-wrapper">
                   <div class="card" style={{backgroundColor: "#0f3741"}}>
                     <div class="card-content white-text">
@@ -189,63 +327,163 @@ export class HandleNansModal extends Component {
                   </div>
                 </div>
               </div>
-              <div class="center col s6">
-                <ul class="tabs" id="tabs1">
-                  <li class="tab col s6"><a style={{color: "blue"}}href="#substitute">Substitute</a></li>
-                  <li class="tab col s6"><a href="#drop">Drop</a></li>
+              <div class="center col s6" style={{paddingTop: "2.5%"}}>
+                <ul onClick={this.handleOptionChange} class="tabs" style={{backgroundColor:"#fafafa"}}>
+                  <li class="tab col s4"><a style={{color: "#0f3741"}} href="#drop">drop</a></li>
+                  <li class="tab col s4"><a style={{color: "#0f3741"}} href="#substitute">substitute</a></li>
+                  <li class="tab col s4"><a href="#impute" style={{color: "#0f3741"}}>impute</a></li>
                 </ul>
 
-                <div class="valign-wrapper modal-valign-wrapper" id="substitute">
-                  <div class="row" style={{paddingTop: "25%"}}>
+                <div id="drop">
+                  <div class="row" style={{paddingTop: "12%"}}>
+
                     <div class="input-field col s12">
-                      <select id="handle_nans_modal_select" onChange={this.handleSelectChange}></select>
+                      <select class="handle_nans_modal_select" onChange={this.handleSelectChange}></select>
                       <label>Dataframes:</label>
                     </div>
+
                     <div class="input-field col s12 m6">
-                      <select multiple id="handle_nans_modal_column_select" onChange={this.handleColumnSelectChange}></select>
+                      <select multiple class="handle_nans_modal_column_select" onChange={this.handleColumnSelectChange}></select>
                       <label>Columns:</label>
                     </div>
-                    <div class="col s6" id="handle_nans_checkbox_field" style={{paddingTop: "15px"}}>
+
+                    <div class="input-field col s6">
+                      <select id="handle_nans_drop_select" onChange={this.handleDropSelectChange}>
+                        <option selected value="0">Rows</option>
+                        <option value="1">Columns</option>
+                      </select>
+                      <label for="handle_nans_drop_select">Drop Rows/Columns</label>
+                    </div>
+
+                    <div class="col s12 m6" style={{paddingTop: "15px"}}>
                     <p>
                       <label>
-                        <input type="checkbox" name="count_values" onChange={this.handleCheckboxChange}/>
+                        <input class="handle_nans_modal_custom_symbol_checkbox" type="checkbox" onChange={this.handleCustomSymbolCheckboxChange}/>
                         <span>Custom Symbol</span>
                       </label>
                     </p>
                     </div>
-                    <div class="input-field col s12">
-                      <input disabled id="handle_nans_modal_input" type="text" onChange={this.handleCustomSymbolInputChange} />
-                      <label class="active" for="handle_nans_modal_input">Custom Symbol Value:</label>
+
+                    <div class="input-field col s12 m6">
+                      <input disabled id="handle_nans_modal_custom_symbol_input_0" class="handle_nans_modal_custom_symbol_input" type="text" onChange={this.handleCustomSymbolInputChange} />
+                      <label class="active" for="handle_nans_modal_custom_symbol_input_0">Custom Symbol Value:</label>
                     </div>
+
+                    <div class="col s12 m6" style={{paddingTop: "15px"}}>
+                      <p>
+                        <label>
+                          <input class="handle_nans_modal_new_dataframe_checkbox" type="checkbox" onChange={this.handleNewDataframeCheckboxChange}/>
+                          <span>New Dataframe</span>
+                        </label>
+                      </p>
+                    </div>
+
+                    <div class="input-field col s12 m6">
+                      <input disabled class="handle_nans_modal_new_dataframe_input" type="text" onChange={this.handleNewDataframeInputChange} />
+                      <label class="active" for="handle_nans_modal_input">Dataframe Name:</label>
+                    </div>
+
                   </div>
                 </div>
 
-                <div class="valign-wrapper modal-valign-wrapper" id="drop">
-                  <div class="row" style={{paddingTop: "25%"}}>
+                <div id="substitute">
+                  <div class="row" style={{paddingTop: "12%"}}>
                     <div class="input-field col s12">
-                      <select id="hand_nans_modal_select" onChange={this.handleSelectChange}></select>
-                      <label>AAA:</label>
+                      <select class="handle_nans_modal_select" onChange={this.handleSelectChange}></select>
+                      <label>Dataframe:</label>
                     </div>
-                    <div class="input-field col s12 m6">
-                      <select multiple id="hand_nans_modal_column_select" onChange={this.handleColumnSelectChange}></select>
+                    <div class="input-field col s6">
+                      <select multiple class="handle_nans_modal_column_select" onChange={this.handleColumnSelectChange}></select>
                       <label>Columns:</label>
                     </div>
+
+                    <div class="input-field col s6">
+                      <input id="handle_nans_modal_substitute_input" type="text" onChange={this.handleSubstituteChange} />
+                      <label class="active" for="handle_nans_modal_substitute_input">Substutute:</label>
+                    </div>
+
                     <div class="col s6" id="hand_nans_checkbox_field" style={{paddingTop: "15px"}}>
+                      <p>
+                        <label>
+                          <input class="handle_nans_modal_custom_symbol_checkbox" type="checkbox" name="count_values" onChange={this.handleCustomSymbolCheckboxChange}/>
+                          <span>Custom Symbol</span>
+                        </label>
+                      </p>
+                    </div>
+                    <div class="input-field col s12 m6">
+                      <input disabled id="handle_nans_modal_custom_symbol_input_1" class="handle_nans_modal_custom_symbol_input" type="text" onChange={this.handleCustomSymbolInputChange} />
+                      <label class="active" for="handle_nans_modal_custom_symbol_input_1">Custom Symbol Value:</label>
+                    </div>
+
+                    <div class="col s12 m6" id="handle_nans_checkbox_field" style={{paddingTop: "15px"}}>
                     <p>
                       <label>
-                        <input type="checkbox" name="count_values" onChange={this.handleCheckboxChange}/>
-                        <span>Custom Symbol</span>
+                        <input class="handle_nans_modal_new_dataframe_checkbox" type="checkbox" onChange={this.handleNewDataframeCheckboxChange}/>
+                        <span>New Dataframe</span>
                       </label>
                     </p>
                     </div>
-                    <div class="input-field col s12">
-                      <input disabled id="hand_nans_modal_input" type="text" onChange={this.handleCustomSymbolInputChange} />
-                      <label class="active" for="hand_nans_modal_input">Custom Symbol Value:</label>
+
+                    <div class="input-field col s12 m6">
+                      <input disabled class="handle_nans_modal_new_dataframe_input" type="text" onChange={this.handleNewDataframeInputChange} />
+                      <label class="active" for="handle_nans_modal_input">Dataframe Name:</label>
                     </div>
+
                   </div>
                 </div>
 
+                <div id="impute">
+                  <div class="row" style={{paddingTop: "12%"}}>
+                    <div class="input-field col s12">
+                      <select class="handle_nans_modal_select" onChange={this.handleSelectChange}></select>
+                      <label>Dataframe:</label>
+                    </div>
+
+                    <div class="input-field col s12 m6">
+                      <select multiple class="handle_nans_modal_numerical_columns_select" onChange={this.handleNumericalColumnSelectChange}></select>
+                      <label>Numerical Columns:</label>
+                    </div>
+
+                    <div class="input-field col s12 m6">
+                      <select id="handle_nans_modal_impute_by_select" onChange={this.handleStrategySelectChange}>
+                        <option selected value="mean">Mean</option>
+                        <option value="median">Median</option>
+                        <option value="most_frequent">Most Frequent</option>
+                      </select>
+                      <label for="handle_nans_drop_select">Strategy</label>
+                    </div>
+
+                    <div class="col s12 m6" id="hand_nans_checkbox_field" style={{paddingTop: "15px"}}>
+                      <p>
+                        <label>
+                          <input class="handle_nans_modal_custom_symbol_checkbox" type="checkbox" name="count_values" onChange={this.handleCustomSymbolCheckboxChange}/>
+                          <span>Custom Symbol</span>
+                        </label>
+                      </p>
+                    </div>
+
+                    <div class="input-field col s12 m6">
+                      <input disabled id="handle_nans_modal_custom_symbol_input_2" class="handle_nans_modal_custom_symbol_input" type="text" onChange={this.handleCustomSymbolInputChange} />
+                      <label class="active" for="handle_nans_modal_custom_symbol_input_2">Custom Symbol Value:</label>
+                    </div>
+
+                    <div class="col s12 m6" style={{paddingTop: "15px"}}>
+                      <p>
+                        <label>
+                          <input class="handle_nans_modal_new_dataframe_checkbox" type="checkbox" onChange={this.handleNewDataframeCheckboxChange}/>
+                          <span>New Dataframe</span>
+                        </label>
+                      </p>
+                    </div>
+
+                    <div class="input-field col s12 m6">
+                      <input disabled class="handle_nans_modal_new_dataframe_input" type="text" onChange={this.handleNewDataframeInputChange} />
+                      <label class="active" for="handle_nans_modal_input">Dataframe Name:</label>
+                    </div>
+                  </div>
+                  </div>
               </div>
+
             </div>
           </div>
           <div class="divider"></div>

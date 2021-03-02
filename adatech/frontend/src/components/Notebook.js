@@ -158,7 +158,7 @@ export default class Notebook extends Component {
         <DescribeDataModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.numerical_columns}/>
         <UniqueValuesModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
         <FindNansModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
-        <HandleNansModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
+        <HandleNansModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns} numerical_columns={this.state.numerical_columns}/>
       </div>
     );
   }

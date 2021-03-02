@@ -9,6 +9,7 @@ from rest_framework.decorators import api_view
 from .Classes import DatasetHolder, DatasetHolder2
 import pandas as pd
 import time
+import numpy as np
 
 # from django.views import View
 # from django.shortcuts import render
@@ -190,12 +191,52 @@ class AnalysisClass():
         id = request.data.get("id")
         dataset_name = request.data.get("dataset")
         columns = request.data.get("columns")
-        substitute = request.data.get("substitute")
         dataset_document = request.session.get(f"{id}_{dataset_name}", None)
         dataset = DatasetHolder(dataset_document)
-        output = dataset.handle_hans(columns, substitute)
+        custom_symbol = json.loads(request.data.get("custom_symbol"))
+        custom_symbol_value = request.data.get("custom_symbol_value")
+        new_dataframe = json.loads(request.data.get("new_dataframe"))
+        new_dataframe_value = request.data.get("new_dataframe_value")
+        option = request.data.get("handle_nans_option")
+        if option == "drop":
+            drop_by = request.data.get("drop_by")
+            new_document, new_df, output = dataset.handle_nans_drop_by(
+                columns, drop_by,
+                custom_symbol,
+                custom_symbol_value,
+                new_dataframe,
+                new_dataframe_value)
+        elif option == "substitute":
+            substitute = request.data.get("substitute")
+            new_document, new_df, output = dataset.handle_nans_substitute(
+                columns, substitute,
+                custom_symbol,
+                custom_symbol_value,
+                new_dataframe,
+                new_dataframe_value)
+        elif option == "impute":
+            strategy = request.data.get("strategy")
+            numerical_cols = json.loads(request.data.get("numerical_columns"))
+            new_document, new_df, output = dataset.handle_nans_impute(
+                numerical_cols, strategy,
+                custom_symbol,
+                custom_symbol_value,
+                new_dataframe,
+                new_dataframe_value)
+
         notebook = Notebook.objects(id=id)[0]
         notebook.output.append(output)
+        if new_document:
+            dataset_dict = {new_dataframe_value: str(new_document.id)}
+            columns_dict = {new_dataframe_value: new_document.columns}
+            num_columns_dict = {new_dataframe_value: new_df.select_dtypes(
+                include=np.number).columns.tolist()}
+            notebook.datasets.update(dataset_dict)
+            notebook.dataset_columns.update(columns_dict)
+            notebook.dataset_numerical_columns.update(num_columns_dict)
+            serialized_data = DatasetSerializer(new_document).data
+            request.session[f"{id}_{new_dataframe_value}"] = serialized_data
+
         notebook.save()
         data = NotebookSerializer(notebook).data
         data["dataset_names"] = list(notebook.datasets.keys())

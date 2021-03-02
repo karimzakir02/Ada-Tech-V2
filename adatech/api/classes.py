@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from .models import Dataset
+from sklearn.impute import SimpleImputer
 
 
 class DatasetHolder:
@@ -63,6 +64,22 @@ class DatasetHolder:
         basic_values.extend(last5.values.tolist())
         return ["table", [df.columns.values.tolist(), basic_values]]
 
+    def new_dataset_return(self, new_df, new_dataframe_value):
+        new_df_cols = new_df.columns.values.tolist()
+        new_df_values = new_df.values.tolist()
+        new_dataset = Dataset()
+        new_dataset.name = new_dataframe_value
+        new_dataset.columns = new_df_cols
+        new_dataset.values = new_df_values
+        new_dataset.save()
+        if len(new_df) > 20:
+            output = self.summary_output(new_df)
+            output = output + ["dataset/" + str(new_dataset.id)]
+            return new_dataset, new_df, output
+        else:
+            output = ["table", [new_df_cols, new_df_values], None]
+            return new_dataset, new_df, output
+
     def random_samples(self, n, columns, random_state):
         if random_state == "null":
             rs = None
@@ -75,7 +92,6 @@ class DatasetHolder:
         if len(samples) > 20:
             output = self.summary_output(samples)
             new_document = Dataset()
-            new_document.id_name = f"{self.author}_samples_{self.id_name}"
             new_document.name = f"samples_{self.name}"
             new_document.columns = columns
             new_document.values = values
@@ -137,9 +153,86 @@ class DatasetHolder:
             missing_cols.insert(0, "")
             return ["table", [missing_cols, [missing_num]], None]
 
-    def handle_nans(self, cols, substitute):
-        self.df.fillna(substitute, inplace=True)
-        return self.initial_output(self.id)
+    def handle_nans_drop_by(self, cols, drop_by, custom_symbol,
+                            custom_symbol_value, new_dataframe,
+                            new_dataframe_value):
+        if custom_symbol:
+            if new_dataframe:
+                if int(drop_by) == 0:
+                    missing = self.df[(self.df == custom_symbol_value).any(
+                        axis=1)].index.tolist()
+                else:
+                    missing = (self.df == custom_symbol_value).any(axis=0)
+                    missing = missing[missing].index.tolist()
+                new_df = self.df.drop(labels=missing, axis=int(drop_by))
+                return self.new_dataset_return(new_df, new_dataframe_value)
+            else:
+                if int(drop_by) == 0:
+                    missing = self.df[(self.df == custom_symbol_value).any(
+                        axis=1)].index.tolist()
+                else:
+                    missing = (self.df == custom_symbol_value).any(axis=0)
+                    missing = missing[missing].index.tolist()
+                self.df.drop(labels=missing, axis=int(drop_by), inplace=True)
+                self.update_document()
+                return False, None, self.initial_output()
+        else:
+            if new_dataframe:
+                new_df = self.df.dropna(axis=int(drop_by))
+                return self.new_dataset_return(new_df, new_dataframe_value)
+            else:
+                self.df.dropna(axis=int(drop_by), inplace=True)
+                self.update_document()
+                return False, None,  self.initial_output()
+
+    def handle_nans_substitute(self, cols, substitute, custom_symbol,
+                               custom_symbol_value, new_dataframe,
+                               new_dataframe_value):
+        if custom_symbol:
+            if new_dataframe:
+                new_df = self.df.replace(custom_symbol_value, substitute)
+                return self.new_dataset_return(new_df, new_dataframe_value)
+            else:
+                self.df.replace(custom_symbol_value, substitute, inplace=True)
+                self.update_document()
+                return False, None, self.initial_output()
+        else:
+            if new_dataframe:
+                new_df = self.df.fillna(substitute)
+                return self.new_dataset_return(new_df, new_dataframe_value)
+            else:
+                self.df.fillna(substitute, inplace=True)
+                self.update_document()
+                return False, None, self.initial_output()
+
+    def handle_nans_impute(self, cols, strategy, custom_symbol,
+                           custom_symbol_value, new_dataframe,
+                           new_dataframe_value):
+        if custom_symbol:
+            imputer = SimpleImputer(missing_values=custom_symbol_value,
+                                    strategy=strategy)
+            imputed_cols = pd.DataFrame(imputer.fit_transform(self.df[cols]))
+            imputed_cols.columns = self.df.columns
+            if new_dataframe:
+                new_df = self.df.copy()
+                new_df[cols] = imputed_cols
+                return self.new_dataset_return(new_df, new_dataframe_value)
+            else:
+                self.df[cols] = imputed_cols
+                self.update_document()
+                return False, None, self.initial_output()
+        else:
+            imputer = SimpleImputer(strategy=strategy)
+            imputed_cols = pd.DataFrame(imputer.fit_transform(self.df[cols]))
+            imputed_cols.columns = cols
+            if new_dataframe:
+                new_df = self.df.copy()
+                new_df[cols] = imputed_cols
+                return self.new_dataset_return(new_df, new_dataframe_value)
+            else:
+                self.df[cols] = imputed_cols
+                self.update_document()
+                return False, None, self.initial_output()
 
 
 class NotebookHolder:

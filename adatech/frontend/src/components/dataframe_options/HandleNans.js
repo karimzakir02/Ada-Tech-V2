@@ -14,12 +14,12 @@ export class HandleNans extends Component {
       notebook_id: this.props.id,
       select_dataset_value: null,
       select_columns_value: null,
-      input_substitute_value: null,
+      select_drop_by_value: "0",
     }
     this.prepareComponent = this.prepareComponent.bind(this);
     this.handleSelectChange = this.handleSelectChange.bind(this);
     this.handleColumnSelectChange = this.handleColumnSelectChange.bind(this);
-    this.handleSubstituteInputChange = this.handleSubstituteInputChange.bind(this);
+    this.handleDropSelectChange = this.handleDropSelectChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
   };
 
@@ -93,9 +93,10 @@ export class HandleNans extends Component {
     });
   }
 
-  handleSubstituteInputChange(event) {
+  handleDropSelectChange(event) {
+    console.log(event.target.value);
     this.setState({
-      input_substitute_value: event.target.value,
+      select_drop_by_value: event.target.value,
     })
   }
 
@@ -105,9 +106,12 @@ export class HandleNans extends Component {
     formData.append("id", this.state.notebook_id);
     formData.append("dataset", this.state.select_dataset_value);
     formData.append("columns", JSON.stringify(this.state.select_columns_value));
-    formData.append("substitute", this.state.input_substitute_value);
+    formData.append("handle_nans_option", "drop")
+    formData.append("drop_by", this.state.select_drop_by_value);
     formData.append("custom_symbol", JSON.stringify(false));
     formData.append("custom_symbol_value", "");
+    formData.append("new_dataframe", JSON.stringify(false));
+    formData.append("new_dataframe_value", "");
     const requestOptions = {
       method: "POST",
       headers: {csrf: csrf},
@@ -126,7 +130,7 @@ export class HandleNans extends Component {
             <a onClick={this.prepareComponent} class="collapsible-header white-text"><span style={{marginLeft: "10px"}}>Handle Missing Values</span></a>
             <div class="collapsible-body">
                 <div class="row" style={{paddingTop: "6%", marginBottom:0}}>
-                  <div class="input-field col s6">
+                  <div class="input-field col s12">
                     <select id="handle_nans_select" onChange={this.handleSelectChange}></select>
                     <label>Dataframe:</label>
                   </div>
@@ -134,14 +138,17 @@ export class HandleNans extends Component {
                     <select multiple id="handle_nans_column_select" onChange={this.handleColumnSelectChange}></select>
                     <label>Columns:</label>
                   </div>
-                  <div class="input-field col s12">
-                    <input id="handle_nans_input" type="text" onChange={this.handleSubstituteInputChange} />
-                    <label class="active" for="handle_nans_input">Substitute:</label>
+                  <div class="input-field col s6">
+                    <select id="handle_nans_drop_select" onChange={this.handleDropSelectChange}>
+                      <option selected value="0">Rows</option>
+                      <option value="1">Columns</option>
+                    </select>
+                    <label for="handle_nans_drop_select">Drop Rows/Columns</label>
                   </div>
                 </div>
                 <div class="divider"></div>
                 <div class="section" style={{paddingTop: "4%", paddingRight: "1%"}}>
-                  <button class="btn-flat modal-trigger" href="#handle_nans_modal">Advanced</button>
+                  <button class="btn-flat modal-trigger" href="#handle_nans_modal">Options</button>
                   <button style={{marginLeft: "32%"}} onClick={this.handleClick} class="btn waves-effect waves-teal secondary-color" type="submit">Confirm</button>
                 </div>
             </div>

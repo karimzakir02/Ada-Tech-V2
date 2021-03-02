@@ -46,8 +46,16 @@ div {
   background-color: #0f3741;
 }
 
+.primary-color-text {
+  color: #0f3741;
+}
+
 .secondary-color {
   background-color: #790604;
+}
+
+.secondary-color-text {
+  color: #790604;
 }
 
 .valign-wrapper {
@@ -77,4 +85,13 @@ div {
 
 .dropdown-content {
   max-height: 375%;
+}
+
+.tabs .indicator {
+  background-color: #790604
+}
+
+.modal {
+  max-height: 100% !important;
+  overflow: visible;
 }
