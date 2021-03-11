@@ -6,6 +6,10 @@ import DescribeDataModal from "./dataframe_options/modals/DescribeDataModal"
 import UniqueValuesModal from "./dataframe_options/modals/UniqueValuesModal"
 import FindNansModal from "./dataframe_options/modals/FindNansModal"
 import HandleNansModal from "./dataframe_options/modals/HandleNansModal"
+import SortModal from "./dataframe_options/modals/SortModal"
+import FilterModal from "./dataframe_options/modals/FilterModal"
+import FilterIndexModal from "./dataframe_options/modals/FilterIndexModal"
+import GroupByCalculationsModal from "./dataframe_options/modals/GroupByCalculationsModal"
 
 export default class Notebook extends Component {
   constructor(props){
@@ -159,6 +163,11 @@ export default class Notebook extends Component {
         <UniqueValuesModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
         <FindNansModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
         <HandleNansModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns} numerical_columns={this.state.numerical_columns}/>
+        <SortModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
+        <FilterModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
+        <FilterIndexModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
+        <GroupByCalculationsModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
+
       </div>
     );
   }

@@ -6,20 +6,22 @@ import {
 } from "react-dom";
 import M from 'materialize-css'
 
-export class HandleNans extends Component {
+export class Sort extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
       notebook_id: this.props.id,
       select_dataset_value: null,
-      select_columns_value: null,
-      select_drop_by_value: "0",
+      select_column_value: null,
+      select_sort_order_value: "ascending",
     }
     this.prepareComponent = this.prepareComponent.bind(this);
+    this.createDatasetSelect = this.createDatasetSelect.bind(this);
+    this.createColumnSelect = this.createColumnSelect.bind(this);
     this.handleSelectChange = this.handleSelectChange.bind(this);
     this.handleColumnSelectChange = this.handleColumnSelectChange.bind(this);
-    this.handleDropSelectChange = this.handleDropSelectChange.bind(this);
+    this.handleSortOrderChange = this.handleSortOrderChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
   };
 
@@ -43,7 +45,7 @@ export class HandleNans extends Component {
   }
 
   createDatasetSelect() {
-    var select = document.getElementById("handle_nans_select");
+    var select = document.getElementById("sort_dataframe_select");
     select.innerHTML = "";
     for (var dataset of this.props.datasets) {
       select.options.add(new Option(dataset, dataset));
@@ -58,18 +60,14 @@ export class HandleNans extends Component {
   }
 
   createColumnSelect(select_value) {
-    var select = document.getElementById("handle_nans_column_select");
-    var selected = []
+    var select = document.getElementById("sort_column_select");
     select.innerHTML = "";
     for (var column of this.props.columns[select_value]) {
       select.options.add(new Option(column, column));
     }
-    for (var i=0; i < this.props.columns[select_value].length; i++){
-      select.options[i].selected = true;
-    }
     this.setState({
-      select_columns_value: this.props.columns[select_value],
-    });
+      select_column_value: select.value,
+    })
     M.FormSelect.init(select);
   }
 
@@ -81,21 +79,14 @@ export class HandleNans extends Component {
   }
 
   handleColumnSelectChange(event) {
-    var select = event.target
-    var selected = []
-    for (var i=0; i<select.options.length; i++) {
-      if (select.options[i].selected == true) {
-        selected.push(select.options[i].value);
-      }
-    }
     this.setState({
-      select_columns_value: selected
+      select_column_value: event.target.value,
     });
   }
 
-  handleDropSelectChange(event) {
+  handleSortOrderChange(event) {
     this.setState({
-      select_drop_by_value: event.target.value,
+      select_sort_order_value: event.target.value,
     })
   }
 
@@ -104,19 +95,17 @@ export class HandleNans extends Component {
     let formData = new FormData();
     formData.append("id", this.state.notebook_id);
     formData.append("dataset", this.state.select_dataset_value);
-    formData.append("columns", JSON.stringify(this.state.select_columns_value));
-    formData.append("handle_nans_option", "drop")
-    formData.append("drop_by", this.state.select_drop_by_value);
-    formData.append("custom_symbol", JSON.stringify(false));
-    formData.append("custom_symbol_value", "");
+    formData.append("column", this.state.select_column_value);
+    formData.append("sort_order", this.state.select_sort_order_value);
     formData.append("new_dataframe", JSON.stringify(false));
     formData.append("new_dataframe_value", "");
+    formData.append("missing_position", "last");
     const requestOptions = {
       method: "POST",
       headers: {csrf: csrf},
       body: formData,
     };
-    fetch("/api/handle-nans", requestOptions)
+    fetch("/api/sort", requestOptions)
     .then((response) => response.json())
     .then((data) => this.props.updateState(data))
   }
@@ -126,28 +115,28 @@ export class HandleNans extends Component {
     render() {
       return(
           <li class="bold">
-            <a onClick={this.prepareComponent} class="collapsible-header white-text"><span style={{marginLeft: "10px"}}>Handle Missing Values</span></a>
+            <a onClick={this.prepareComponent} class="collapsible-header white-text"><span style={{marginLeft: "10px"}}>Sort</span></a>
             <div class="collapsible-body">
                 <div class="row" style={{paddingTop: "6%", marginBottom:0}}>
                   <div class="input-field col s12">
-                    <select id="handle_nans_select" onChange={this.handleSelectChange}></select>
+                    <select id="sort_dataframe_select" onChange={this.handleSelectChange}></select>
                     <label>Dataframe:</label>
                   </div>
                   <div class="input-field col s6">
-                    <select multiple id="handle_nans_column_select" onChange={this.handleColumnSelectChange}></select>
-                    <label>Columns:</label>
+                    <select id="sort_column_select" onChange={this.handleColumnSelectChange}></select>
+                    <label>Sort By:</label>
                   </div>
                   <div class="input-field col s6">
-                    <select id="handle_nans_drop_select" onChange={this.handleDropSelectChange}>
-                      <option selected value="0">Rows</option>
-                      <option value="1">Columns</option>
+                    <select id="sort_order_select" onChange={this.handleSortOrderChange}>
+                      <option selected value="ascending">Ascending</option>
+                      <option value="descending">Descending</option>
                     </select>
-                    <label for="handle_nans_drop_select">Drop Rows/Columns</label>
+                    <label for="sort_order_select">Sort Order</label>
                   </div>
                 </div>
                 <div class="divider"></div>
                 <div class="section" style={{paddingTop: "4%"}}>
-                  <button class="btn-flat modal-trigger" href="#handle_nans_modal">Options</button>
+                  <button class="btn-flat modal-trigger" href="#sort_modal">Options</button>
                   <button style={{marginLeft: "35%"}} onClick={this.handleClick} class="btn waves-effect waves-teal secondary-color" type="submit">Confirm</button>
                 </div>
             </div>
@@ -156,4 +145,4 @@ export class HandleNans extends Component {
   }
 }
 
-export default HandleNans;
+export default Sort;

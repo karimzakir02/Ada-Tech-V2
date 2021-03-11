@@ -6,9 +6,9 @@ from rest_framework.response import Response
 from django.core.files.storage import FileSystemStorage
 import json
 from rest_framework.decorators import api_view
-from .Classes import DatasetHolder, DatasetHolder2
+from .Classes import DatasetHolder
 import pandas as pd
-import time
+# import time
 import numpy as np
 
 # from django.views import View
@@ -237,6 +237,116 @@ class AnalysisClass():
             serialized_data = DatasetSerializer(new_document).data
             request.session[f"{id}_{new_dataframe_value}"] = serialized_data
 
+        notebook.save()
+        data = NotebookSerializer(notebook).data
+        data["dataset_names"] = list(notebook.datasets.keys())
+        return Response(data, status=status.HTTP_200_OK)
+
+    @api_view(("POST", ))
+    def sort(request):
+        id = request.data.get("id")
+        dataset_name = request.data.get("dataset")
+        column = request.data.get("column")
+        sort_order = request.data.get("sort_order")
+        missing_position = request.data.get("missing_position")
+        new_dataframe = json.loads(request.data.get("new_dataframe"))
+        new_dataframe_value = request.data.get("new_dataframe_value")
+        dataset_document = request.session.get(f"{id}_{dataset_name}", None)
+        dataset = DatasetHolder(dataset_document)
+        new_document, new_df, output = dataset.sort(column, sort_order,
+                                                    missing_position,
+                                                    new_dataframe,
+                                                    new_dataframe_value)
+        notebook = Notebook.objects(id=id)[0]
+        if new_document:
+            dataset_dict = {new_dataframe_value: str(new_document.id)}
+            columns_dict = {new_dataframe_value: new_document.columns}
+            num_columns_dict = {new_dataframe_value: new_df.select_dtypes(
+                include=np.number).columns.tolist()}
+            notebook.datasets.update(dataset_dict)
+            notebook.dataset_columns.update(columns_dict)
+            notebook.dataset_numerical_columns.update(num_columns_dict)
+            serialized_data = DatasetSerializer(new_document).data
+            request.session[f"{id}_{new_dataframe_value}"] = serialized_data
+        notebook.output.append(output)
+        notebook.save()
+        data = NotebookSerializer(notebook).data
+        data["dataset_names"] = list(notebook.datasets.keys())
+        return Response(data, status=status.HTTP_200_OK)
+
+    @api_view(("POST",))
+    def filter(request):
+        id = request.data.get("id")
+        dataset_name = request.data.get("dataset")
+        expression = request.data.get("expression")
+        new_dataframe = json.loads(request.data.get("new_dataframe"))
+        new_dataframe_value = request.data.get("new_dataframe_value")
+        dataset_document = request.session.get(f"{id}_{dataset_name}", None)
+        dataset = DatasetHolder(dataset_document)
+        new_document, new_df, output = dataset.filter(expression,
+                                                      new_dataframe,
+                                                      new_dataframe_value)
+        notebook = Notebook.objects(id=id)[0]
+        if new_document:
+            dataset_dict = {new_dataframe_value: str(new_document.id)}
+            columns_dict = {new_dataframe_value: new_document.columns}
+            num_columns_dict = {new_dataframe_value: new_df.select_dtypes(
+                include=np.number).columns.tolist()}
+            notebook.datasets.update(dataset_dict)
+            notebook.dataset_columns.update(columns_dict)
+            notebook.dataset_numerical_columns.update(num_columns_dict)
+            serialized_data = DatasetSerializer(new_document).data
+            request.session[f"{id}_{new_dataframe_value}"] = serialized_data
+        notebook.output.append(output)
+        notebook.save()
+        data = NotebookSerializer(notebook).data
+        data["dataset_names"] = list(notebook.datasets.keys())
+        return Response(data, status=status.HTTP_200_OK)
+
+    @api_view(("POST",))
+    def filter_index(request):
+        id = request.data.get("id")
+        dataset_name = request.data.get("dataset")
+        expression = request.data.get("expression")
+        method = request.data.get("method")
+        new_dataframe = json.loads(request.data.get("new_dataframe"))
+        new_dataframe_value = request.data.get("new_dataframe_value")
+        dataset_document = request.session.get(f"{id}_{dataset_name}", None)
+        dataset = DatasetHolder(dataset_document)
+        notebook = Notebook.objects(id=id)[0]
+        new_doc, new_df, output = dataset.filter_index(expression, method,
+                                                       new_dataframe,
+                                                       new_dataframe_value)
+
+        if new_doc:
+            dataset_dict = {new_dataframe_value: str(new_doc.id)}
+            columns_dict = {new_dataframe_value: new_doc.columns}
+            num_columns_dict = {new_dataframe_value: new_df.select_dtypes(
+                include=np.number).columns.tolist()}
+            notebook.datasets.update(dataset_dict)
+            notebook.dataset_columns.update(columns_dict)
+            notebook.dataset_numerical_columns.update(num_columns_dict)
+            serialized_data = DatasetSerializer(new_doc).data
+            request.session[f"{id}_{new_dataframe_value}"] = serialized_data
+        notebook.output.append(output)
+        notebook.save()
+        data = NotebookSerializer(notebook).data
+        data["dataset_names"] = list(notebook.datasets.keys())
+        return Response(data, status=status.HTTP_200_OK)
+
+    @api_view(("POST",))
+    def group_by_calculations(request):
+        id = request.data.get("id")
+        dataset_name = request.data.get("dataset")
+        columns = json.loads(request.data.get("columns"))
+        group_by_column = request.data.get("group_by_column")
+        calculations = json.loads(request.data.get("calculations"))
+        dataset_document = request.session.get(f"{id}_{dataset_name}", None)
+        dataset = DatasetHolder(dataset_document)
+        notebook = Notebook.objects(id=id)[0]
+        output = dataset.group_by_calculations(columns, group_by_column,
+                                               calculations)
+        notebook.output.append(output)
         notebook.save()
         data = NotebookSerializer(notebook).data
         data["dataset_names"] = list(notebook.datasets.keys())

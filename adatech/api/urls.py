@@ -16,6 +16,10 @@ urlpatterns = [
     path("unique-values", AnalysisClass.unique_values),
     path("find-nans", AnalysisClass.find_nans),
     path("handle-nans", AnalysisClass.handle_nans),
+    path("sort", AnalysisClass.sort),
+    path("filter", AnalysisClass.filter),
+    path("filter-index", AnalysisClass.filter_index),
+    path("group-by-calculations", AnalysisClass.group_by_calculations),
 ]
 
 if settings.DEBUG:

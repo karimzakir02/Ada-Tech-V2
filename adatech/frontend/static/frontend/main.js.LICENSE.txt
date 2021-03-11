@@ -38,6 +38,14 @@
 
 /*! export Element [provided] [no usage info] [provision prevents renaming (no use info)] -> ./node_modules/react-is/cjs/react-is.production.min.js .Element */
 
+/*! export Filter [provided] [no usage info] [missing usage info prevents renaming] */
+
+/*! export FilterIndex [provided] [no usage info] [missing usage info prevents renaming] */
+
+/*! export FilterIndexModal [provided] [no usage info] [missing usage info prevents renaming] */
+
+/*! export FilterModal [provided] [no usage info] [missing usage info prevents renaming] */
+
 /*! export FindNans [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*! export FindNansModal [provided] [no usage info] [missing usage info prevents renaming] */
@@ -51,6 +59,10 @@
 /*! export Fragment [provided] [no usage info] [provision prevents renaming (no use info)] -> ./node_modules/react-is/cjs/react-is.production.min.js .Fragment */
 
 /*! export Fragment [provided] [no usage info] [provision prevents renaming (no use info)] -> ./node_modules/react/cjs/react.production.min.js .Fragment */
+
+/*! export GroupByCalculations [provided] [no usage info] [missing usage info prevents renaming] */
+
+/*! export GroupByCalculationsModal [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*! export HandleNans [provided] [no usage info] [missing usage info prevents renaming] */
 
@@ -113,6 +125,10 @@
 /*! export Router [provided] [no usage info] [missing usage info prevents renaming] -> ./node_modules/react-router/esm/react-router.js .Router */
 
 /*! export Sidenav [provided] [no usage info] [missing usage info prevents renaming] */
+
+/*! export Sort [provided] [no usage info] [missing usage info prevents renaming] */
+
+/*! export SortModal [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*! export StaticRouter [provided] [no usage info] [missing usage info prevents renaming] */
 
@@ -566,6 +582,14 @@
   !*** ./src/components/MachineLearningOptions.js ***!
   \**************************************************/
 
+/*!**************************************************!*\
+  !*** ./src/components/dataframe_options/Sort.js ***!
+  \**************************************************/
+
+/*!****************************************************!*\
+  !*** ./src/components/dataframe_options/Filter.js ***!
+  \****************************************************/
+
 /*!*****************************************************!*\
   !*** ./node_modules/value-equal/esm/value-equal.js ***!
   \*****************************************************/
@@ -585,6 +609,10 @@
 /*!********************************************************!*\
   !*** ./src/components/dataframe_options/HandleNans.js ***!
   \********************************************************/
+
+/*!*********************************************************!*\
+  !*** ./src/components/dataframe_options/FilterIndex.js ***!
+  \*********************************************************/
 
 /*!**********************************************************!*\
   !*** ./src/components/dataframe_options/DescribeData.js ***!
@@ -618,6 +646,10 @@
   !*** ./node_modules/react-is/cjs/react-is.production.min.js ***!
   \**************************************************************/
 
+/*!**************************************************************!*\
+  !*** ./src/components/dataframe_options/modals/SortModal.js ***!
+  \**************************************************************/
+
 /*!***************************************************************!*\
   !*** ./node_modules/react-router-dom/esm/react-router-dom.js ***!
   \***************************************************************/
@@ -638,6 +670,14 @@
   !*** ./node_modules/tiny-invariant/dist/tiny-invariant.esm.js ***!
   \****************************************************************/
 
+/*!****************************************************************!*\
+  !*** ./src/components/dataframe_options/modals/FilterModal.js ***!
+  \****************************************************************/
+
+/*!*****************************************************************!*\
+  !*** ./src/components/dataframe_options/GroupByCalculations.js ***!
+  \*****************************************************************/
+
 /*!******************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/esm/inheritsLoose.js ***!
   \******************************************************************/
@@ -654,6 +694,10 @@
   !*** ./src/components/dataframe_options/modals/HandleNansModal.js ***!
   \********************************************************************/
 
+/*!*********************************************************************!*\
+  !*** ./src/components/dataframe_options/modals/FilterIndexModal.js ***!
+  \*********************************************************************/
+
 /*!**********************************************************************!*\
   !*** ./src/components/dataframe_options/modals/DescribeDataModal.js ***!
   \**********************************************************************/
@@ -665,6 +709,10 @@
 /*!***********************************************************************!*\
   !*** ./src/components/dataframe_options/modals/RandomSamplesModal.js ***!
   \***********************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ./src/components/dataframe_options/modals/GroupByCalculationsModal.js ***!
+  \*****************************************************************************/
 
 /*!*********************************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js ***!
