@@ -20,6 +20,11 @@ urlpatterns = [
     path("filter", AnalysisClass.filter),
     path("filter-index", AnalysisClass.filter_index),
     path("group-by-calculations", AnalysisClass.group_by_calculations),
+    path("add-column", AnalysisClass.add_column),
+    path("remove-columns", AnalysisClass.remove_columns),
+    path("shift-column", AnalysisClass.shift_column),
+    path("set-reset-index", AnalysisClass.set_reset_index),
+    path("combine-data", AnalysisClass.combine_data),
 ]
 
 if settings.DEBUG:

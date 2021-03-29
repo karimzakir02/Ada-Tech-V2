@@ -8,6 +8,8 @@ class Dataset(Document):
     name = fields.StringField(max_length=100)
     author = fields.StringField(max_length=50)
     columns = fields.ListField()
+    numerical_columns = fields.ListField()
+    object_columns = fields.ListField()
     values = fields.ListField()
 
 
@@ -16,8 +18,9 @@ class Notebook(Document):
     author = fields.StringField(max_length=50)
     created_at = fields.DateTimeField(default=datetime.utcnow)
     datasets = fields.DictField()
-    # Maybe combine the above two into a dictionairy? That would cause problems
-    # in the frontend. Simply convert them into .values() or .keys()
     dataset_columns = fields.DictField()
     dataset_numerical_columns = fields.DictField()
+    dataset_object_columns = fields.DictField()
+    # Maybe do this the same way how you do it with the names/id's
+    # Target is not to store these two/three fields in the future.
     output = fields.ListField()

@@ -3,6 +3,7 @@ import numpy as np
 from .models import Dataset
 from sklearn.impute import SimpleImputer
 import parser
+import re
 
 
 class DatasetHolder:
@@ -12,34 +13,25 @@ class DatasetHolder:
         self.name = model["name"]
         self.author = model["author"]
         self.columns = model["columns"]
+        self.numerical_columns = model["numerical_columns"]
+        self.object_columns = model["object_columns"]
         self.values = model["values"]
         self.df = pd.DataFrame(data=self.values, columns=self.columns)
-        self.columns_info()
 
-    def columns_info(self):
-        self.numerical_columns = self.df.select_dtypes(
-            include=np.number).columns.tolist()
-        self.object_columns = self.df.select_dtypes(
-            exclude=np.number).columns.tolist()
-
-        return self.columns, self.numerical_columns, self.object_columns
-
-    def update_values(self):
-        self.columns_info()
-        # self.df_values = self.df.values.tolist()
+    def columns_type(self, df):
+        num_columns = df.select_dtypes(include=np.number).columns.tolist()
+        object_columns = df.select_dtypes(exclude=np.number).columns.tolist()
+        return num_columns, object_columns
 
     def update_document(self):
         document = Dataset.objects(id=self.id)[0]
         document.columns = self.df.columns.values.tolist()
+        document.numerical_columns = self.df.select_dtypes(
+            include=np.number).columns.tolist()
+        document.object_columns = self.df.select_dtypes(
+            exclude=np.number).columns.tolist()
         document.values = self.df.values.tolist()
         document.save()
-
-    def to_document(self):
-        document = Dataset()
-        document.id_name = self.id_name
-        document.author = self.author
-        document.columns = self.columns
-        document.values = self.df.values.tolist()
         return document
 
     def initial_output(self):
@@ -56,11 +48,17 @@ class DatasetHolder:
 
     def full_output(self):
         df = self.df.fillna("NaN")
-        return {"columns": df.columns.values.tolist(),
+        df.reset_index(inplace=True)
+        columns = df.columns.values.tolist()
+        columns[0] = ""
+        return {"columns": columns,
                 "values": df.values.tolist()}
 
     def summary_output(self, df):
-        df.fillna("NaN", inplace=True)
+        try:
+            df.fillna("NaN", inplace=True)
+        except ValueError:
+            print("Passed")
         first5 = df.head()
         basic_values = first5.values.tolist()
         last5 = df.tail()
@@ -78,18 +76,23 @@ class DatasetHolder:
         new_dataset.name = new_dataframe_value
         new_dataset.columns = new_df_cols
         new_dataset.values = new_df_values
+        new_dataset.numerical_columns = new_df.select_dtypes(
+            include=np.number).columns.tolist()
+        new_dataset.object_columns = new_df.select_dtypes(
+            exclude=np.number).columns.tolist()
         new_dataset.save()
+
         if len(new_df) > 20:
             output = self.summary_output(new_df.reset_index())
             output = output + ["dataset/" + str(new_dataset.id)]
-            return new_dataset, new_df, output
+            return new_dataset, output
         else:
             output_df = new_df.reset_index()
             output_cols = output_df.columns.values.tolist()
             output_cols[0] = ""
             output_values = output_df.values.tolist()
             output = ["table", [output_cols, output_values], None]
-            return new_dataset, new_df, output
+            return new_dataset, output
 
     def random_samples(self, n, columns, random_state):
         if random_state == "null":
@@ -187,16 +190,16 @@ class DatasetHolder:
                     missing = (self.df == custom_symbol_value).any(axis=0)
                     missing = missing[missing].index.tolist()
                 self.df.drop(labels=missing, axis=int(drop_by), inplace=True)
-                self.update_document()
-                return False, None, self.initial_output()
+                document = self.update_document()
+                return document, self.initial_output()
         else:
             if new_dataframe:
                 new_df = self.df.dropna(axis=int(drop_by))
                 return self.new_dataset_return(new_df, new_dataframe_value)
             else:
                 self.df.dropna(axis=int(drop_by), inplace=True)
-                self.update_document()
-                return False, None,  self.initial_output()
+                document = self.update_document()
+                return document,  self.initial_output()
 
     def handle_nans_substitute(self, cols, substitute, custom_symbol,
                                custom_symbol_value, new_dataframe,
@@ -207,16 +210,16 @@ class DatasetHolder:
                 return self.new_dataset_return(new_df, new_dataframe_value)
             else:
                 self.df.replace(custom_symbol_value, substitute, inplace=True)
-                self.update_document()
-                return False, None, self.initial_output()
+                document = self.update_document()
+                return document, self.initial_output()
         else:
             if new_dataframe:
                 new_df = self.df.fillna(substitute)
                 return self.new_dataset_return(new_df, new_dataframe_value)
             else:
                 self.df.fillna(substitute, inplace=True)
-                self.update_document()
-                return False, None, self.initial_output()
+                document = self.update_document()
+                return document, self.initial_output()
 
     def handle_nans_impute(self, cols, strategy, custom_symbol,
                            custom_symbol_value, new_dataframe,
@@ -232,8 +235,8 @@ class DatasetHolder:
                 return self.new_dataset_return(new_df, new_dataframe_value)
             else:
                 self.df[cols] = imputed_cols
-                self.update_document()
-                return False, None, self.initial_output()
+                document = self.update_document()
+                return document, self.initial_output()
         else:
             imputer = SimpleImputer(strategy=strategy)
             imputed_cols = pd.DataFrame(imputer.fit_transform(self.df[cols]))
@@ -244,8 +247,8 @@ class DatasetHolder:
                 return self.new_dataset_return(new_df, new_dataframe_value)
             else:
                 self.df[cols] = imputed_cols
-                self.update_document()
-                return False, None, self.initial_output()
+                document = self.update_document()
+                return document, self.initial_output()
 
     def sort(self, column, sort_order, missing_position,
              new_dataframe, new_dataframe_value):
@@ -256,8 +259,8 @@ class DatasetHolder:
             return self.new_dataset_return(sorted_df, new_dataframe_value)
         else:
             self.df = sorted_df
-            self.update_document()
-            return False, None, self.initial_output()
+            document = self.update_document()
+            return document, self.initial_output()
 
     def filter(self, expression, new_dataframe, new_dataframe_value):
         # TODO: In the future, will need to handle for invalid inputs
@@ -275,7 +278,7 @@ class DatasetHolder:
         columns = filtered_df.columns.values.tolist()
         values = filtered_df.values.tolist()
         if len(filtered_df) == 0:
-            return False, None, ["text", "No rows matched the given value"]
+            return False, ["text", "No rows matched the given value"]
         elif new_dataframe:
             return self.new_dataset_return(filtered_df, new_dataframe_value)
         else:
@@ -287,9 +290,9 @@ class DatasetHolder:
                 new_document.values = values
                 new_document.save()
                 output = output + ["dataset/" + str(new_document.id)]
-                return False, None, output
+                return False, output
             else:
-                return False, None, ["table", [columns, values], None]
+                return False, ["table", [columns, values], None]
 
     def filter_index(self, expression, method, new_dataframe,
                      new_dataframe_value):
@@ -327,13 +330,13 @@ class DatasetHolder:
                 new_document.values = values
                 new_document.save()
                 output = output + ["dataset/" + str(new_document.id)]
-                return False, None, output
+                return False, output
             else:
                 filtered_df.reset_index(inplace=True)
                 columns = filtered_df.columns.values.tolist()
                 columns[0] = ""
                 values = filtered_df.values.tolist()
-                return False, None, ["table", [columns, values], None]
+                return False, ["table", [columns, values], None]
 
     def group_by_calculations(self, cols, group_by_col, calculations):
         if len(calculations) > 1:
@@ -371,6 +374,134 @@ class DatasetHolder:
             columns[0] = "Group"
             values = output_df.values.tolist()
             return ["table", [columns, values], None]
+
+    def add_custom_column(self, column_name, formula):
+        operators = "+", "-", "*", "/"
+        regular_exp = "|".join(map(re.escape, operators))
+        formula_parts = re.split(regular_exp, formula)
+        formula_parts = [part.strip() for part in formula_parts]
+
+        for part in formula_parts:
+            if part in self.columns:
+                formula = formula.replace(part, f"self.df['{part}']")
+            else:
+                try:
+                    formula = formula.replace(part, part)
+                except ValueError:
+                    pass
+        code = parser.expr(formula).compile()
+        self.df[column_name] = eval(code)
+        document = self.update_document()
+        return self.initial_output(), document
+
+    def rolling_mean(self, new_col_name, column, by):
+        self.df[new_col_name] = self.df[column].rolling(int(by)).mean()
+        document = self.update_document()
+        return self.initial_output(), document
+
+    def rolling_sum(self, new_col_name, column, by):
+        self.df[new_col_name] = self.df[column].rolling(int(by)).sum()
+        document = self.update_document()
+        return self.initial_output(), document
+
+    def remove_columns(self, columns, new_dataframe, new_dataframe_value):
+        if new_dataframe:
+            new_df = self.df.drop(columns, axis=1)
+            return self.new_dataset_return(new_df, new_dataframe_value)
+        else:
+            self.df.drop(columns, axis=1, inplace=True)
+        document = self.update_document()
+        return document, self.initial_output()
+
+    def shift_column(self, column, shift_by, new_column, new_column_name):
+        if new_column:
+            column_name = new_column_name
+        else:
+            column_name = column
+        self.df[column_name] = self.df[column].shift(int(shift_by))
+        document = self.update_document()
+        return self.initial_output(), document
+
+    def set_index(self, column, drop, new_dataframe, new_dataframe_value):
+        if new_dataframe:
+            new_df = self.df.set_index(column, drop=drop)
+            return self.new_dataset_return(new_df, new_dataframe_value)
+        else:
+            self.df.set_index(column, drop=drop, inplace=True)
+            document = self.update_document()
+            return document, self.initial_output()
+
+    def reset_index(self, drop, new_dataframe, new_dataframe_value):
+        if new_dataframe:
+            new_df = self.df.reset_index(drop=drop)
+            return self.new_dataset_return(new_df, new_dataframe_value)
+        else:
+            self.df.reset_index(drop=drop, inplace=True)
+            document = self.update_document()
+            return document, self.initial_output()
+
+    def merge(self, right_dataset, left_on, right_on, how, indicator,
+              left_suffix, right_suffix, new_dataframe, new_dataframe_value):
+        print("Right Dataset: ", right_dataset.name)
+        print("Left_on: ", left_on)
+        print("Right_on: ", right_on)
+        print("Indicator: ", indicator)
+        print("Left suffix", left_suffix)
+        print("Right suffix", right_suffix)
+        right_dataframe = right_dataset.df
+        if left_on == "auto":
+            left_on = None
+        if right_on == "auto":
+            right_on = None
+        if not left_suffix:
+            left_suffix = "_x"
+        if not right_suffix:
+            right_suffix = "_y"
+        suffixes = (left_suffix, right_suffix)
+        if left_on == "index" and right_on == "index":
+            combined = self.df.merge(right_dataframe, how=how, left_index=True,
+                                     right_index=True, suffixes=suffixes,
+                                     indicator=indicator)
+        elif left_on == "index":
+            combined = self.df.merge(right_dataframe, how=how, left_index=True,
+                                     right_on=right_on, suffixes=suffixes,
+                                     indicator=indicator)
+        elif right_on == "index":
+            combined = self.df.merge(right_dataframe, how=how, left_on=left_on,
+                                     right_index=True, suffixes=suffixes,
+                                     indicator=indicator)
+        else:
+            combined = self.df.merge(right_dataframe, how=how, left_on=left_on,
+                                     right_on=right_on, suffixes=suffixes,
+                                     indicator=indicator)
+        if new_dataframe:
+            return self.new_dataset_return(combined, new_dataframe_value)
+        self.df = combined
+        document = self.update_document()
+        return document, self.initial_output()
+
+    def concat(self, right_dataset, how, ignore_index, indicator, sort,
+               new_dataframe, new_dataframe_value):
+        right_dataframe = right_dataset.df
+        if indicator and not ignore_index:
+            combined = pd.concat([self.df, right_dataframe], join=how,
+                                 ignore_index=ignore_index, sort=sort,
+                                 keys=[self.name, right_dataset.name])
+            combined.reset_index(inplace=True)
+            combined.rename(columns={"level_0": "from"}, inplace=True)
+            combined.set_index("level_1", inplace=True)
+            cols = combined.columns.values.tolist()
+            cols.remove("from")
+            combined = combined[cols + ["from"]]
+
+        else:
+            combined = pd.concat([self.df, right_dataframe], join=how,
+                                 ignore_index=ignore_index, sort=sort)
+        if new_dataframe:
+            return self.new_dataset_return(combined, new_dataframe_value)
+        self.df = combined
+        document = self.update_document()
+        return document, self.initial_output()
 
 
 class NotebookHolder:

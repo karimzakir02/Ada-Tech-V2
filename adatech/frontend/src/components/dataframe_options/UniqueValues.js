@@ -116,7 +116,7 @@ export class UniqueValues extends Component {
                 </div>
                 <div class="divider"></div>
                 <div class="section" style={{paddingTop: "4%", paddingRight: "1%"}}>
-                  <button class="btn-flat modal-trigger" href="#unique_values_modal">Advanced</button>
+                  <button class="btn-flat modal-trigger" href="#unique_values_modal">Options</button>
                   <button style={{marginLeft: "32%"}} onClick={this.handleClick} class="btn waves-effect waves-teal secondary-color" type="submit">Confirm</button>
                 </div>
             </div>

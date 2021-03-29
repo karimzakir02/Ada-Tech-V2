@@ -9,6 +9,11 @@ import Sort from "./dataframe_options/Sort"
 import Filter from "./dataframe_options/Filter"
 import FilterIndex from "./dataframe_options/FilterIndex"
 import GroupByCalculations from "./dataframe_options/GroupByCalculations"
+import AddColumn from "./dataframe_options/AddColumn"
+import RemoveColumns from "./dataframe_options/RemoveColumns"
+import ShiftColumn from "./dataframe_options/ShiftColumn"
+import SetResetIndex from "./dataframe_options/SetResetIndex"
+import CombineData from "./dataframe_options/CombineData"
 
 export class DataframeOptions extends Component {
 
@@ -38,6 +43,16 @@ export class DataframeOptions extends Component {
           <Filter id={this.props.id} datasets={this.props.datasets} updateState={this.props.updateState} columns={this.props.columns}/>
           <FilterIndex id={this.props.id} datasets={this.props.datasets} updateState={this.props.updateState} columns={this.props.columns}/>
           <GroupByCalculations id={this.props.id} datasets={this.props.datasets} updateState={this.props.updateState} columns={this.props.columns}/>
+        </ul>
+        <li style={{marginLeft: "15px"}}>
+          <h4 class="white-text" style={{fontSize: "15pt", marginTop: "10px"}}>Data Modifications</h4>
+        </li>
+        <ul class="collapsible collapsible-accordion">
+          <AddColumn id={this.props.id} datasets={this.props.datasets} updateState={this.props.updateState} columns={this.props.columns}/>
+          <RemoveColumns id={this.props.id} datasets={this.props.datasets} updateState={this.props.updateState} columns={this.props.columns}/>
+          <ShiftColumn id={this.props.id} datasets={this.props.datasets} updateState={this.props.updateState} columns={this.props.columns}/>
+          <SetResetIndex id={this.props.id} datasets={this.props.datasets} updateState={this.props.updateState} columns={this.props.columns}/>
+          <CombineData id={this.props.id} datasets={this.props.datasets} updateState={this.props.updateState} columns={this.props.columns}/>
         </ul>
       </div>
   )

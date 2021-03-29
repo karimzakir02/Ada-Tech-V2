@@ -10,6 +10,11 @@ import SortModal from "./dataframe_options/modals/SortModal"
 import FilterModal from "./dataframe_options/modals/FilterModal"
 import FilterIndexModal from "./dataframe_options/modals/FilterIndexModal"
 import GroupByCalculationsModal from "./dataframe_options/modals/GroupByCalculationsModal"
+import AddColumnModal from "./dataframe_options/modals/AddColumnModal"
+import RemoveColumnsModal from "./dataframe_options/modals/RemoveColumnsModal"
+import ShiftColumnModal from "./dataframe_options/modals/ShiftColumnModal"
+import SetResetIndexModal from "./dataframe_options/modals/SetResetIndexModal"
+import CombineDataModal from "./dataframe_options/modals/CombineDataModal"
 
 export default class Notebook extends Component {
   constructor(props){
@@ -167,7 +172,11 @@ export default class Notebook extends Component {
         <FilterModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
         <FilterIndexModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
         <GroupByCalculationsModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
-
+        <AddColumnModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.numerical_columns}/>
+        <RemoveColumnsModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
+        <ShiftColumnModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
+        <SetResetIndexModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
+        <CombineDataModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
       </div>
     );
   }

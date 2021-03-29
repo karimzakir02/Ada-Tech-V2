@@ -2,6 +2,10 @@
 
 /*! dynamic exports */
 
+/*! export AddColumn [provided] [no usage info] [missing usage info prevents renaming] */
+
+/*! export AddColumnModal [provided] [no usage info] [missing usage info prevents renaming] */
+
 /*! export AsyncMode [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*! export AsyncMode [provided] [no usage info] [provision prevents renaming (no use info)] -> ./node_modules/react-is/cjs/react-is.production.min.js .AsyncMode */
@@ -11,6 +15,10 @@
 /*! export Children [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*! export Children [provided] [no usage info] [provision prevents renaming (no use info)] -> ./node_modules/react/cjs/react.production.min.js .Children */
+
+/*! export CombineData [provided] [no usage info] [missing usage info prevents renaming] */
+
+/*! export CombineDataModal [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*! export Component [provided] [no usage info] [missing usage info prevents renaming] */
 
@@ -116,6 +124,10 @@
 
 /*! export Redirect [provided] [no usage info] [missing usage info prevents renaming] -> ./node_modules/react-router/esm/react-router.js .Redirect */
 
+/*! export RemoveColumns [provided] [no usage info] [missing usage info prevents renaming] */
+
+/*! export RemoveColumnsModal [provided] [no usage info] [missing usage info prevents renaming] */
+
 /*! export Route [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*! export Route [provided] [no usage info] [missing usage info prevents renaming] -> ./node_modules/react-router/esm/react-router.js .Route */
@@ -123,6 +135,14 @@
 /*! export Router [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*! export Router [provided] [no usage info] [missing usage info prevents renaming] -> ./node_modules/react-router/esm/react-router.js .Router */
+
+/*! export SetResetIndex [provided] [no usage info] [missing usage info prevents renaming] */
+
+/*! export SetResetIndexModal [provided] [no usage info] [missing usage info prevents renaming] */
+
+/*! export ShiftColumn [provided] [no usage info] [missing usage info prevents renaming] */
+
+/*! export ShiftColumnModal [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*! export Sidenav [provided] [no usage info] [missing usage info prevents renaming] */
 
@@ -602,6 +622,10 @@
   !*** ./node_modules/react-router/esm/react-router.js ***!
   \*******************************************************/
 
+/*!*******************************************************!*\
+  !*** ./src/components/dataframe_options/AddColumn.js ***!
+  \*******************************************************/
+
 /*!********************************************************!*\
   !*** ./node_modules/react/cjs/react.production.min.js ***!
   \********************************************************/
@@ -611,7 +635,15 @@
   \********************************************************/
 
 /*!*********************************************************!*\
+  !*** ./src/components/dataframe_options/CombineData.js ***!
+  \*********************************************************/
+
+/*!*********************************************************!*\
   !*** ./src/components/dataframe_options/FilterIndex.js ***!
+  \*********************************************************/
+
+/*!*********************************************************!*\
+  !*** ./src/components/dataframe_options/ShiftColumn.js ***!
   \*********************************************************/
 
 /*!**********************************************************!*\
@@ -624,6 +656,14 @@
 
 /*!***********************************************************!*\
   !*** ./src/components/dataframe_options/RandomSamples.js ***!
+  \***********************************************************/
+
+/*!***********************************************************!*\
+  !*** ./src/components/dataframe_options/RemoveColumns.js ***!
+  \***********************************************************/
+
+/*!***********************************************************!*\
+  !*** ./src/components/dataframe_options/SetResetIndex.js ***!
   \***********************************************************/
 
 /*!************************************************************!*\
@@ -690,12 +730,24 @@
   !*** ./src/components/dataframe_options/modals/FindNansModal.js ***!
   \******************************************************************/
 
+/*!*******************************************************************!*\
+  !*** ./src/components/dataframe_options/modals/AddColumnModal.js ***!
+  \*******************************************************************/
+
 /*!********************************************************************!*\
   !*** ./src/components/dataframe_options/modals/HandleNansModal.js ***!
   \********************************************************************/
 
 /*!*********************************************************************!*\
+  !*** ./src/components/dataframe_options/modals/CombineDataModal.js ***!
+  \*********************************************************************/
+
+/*!*********************************************************************!*\
   !*** ./src/components/dataframe_options/modals/FilterIndexModal.js ***!
+  \*********************************************************************/
+
+/*!*********************************************************************!*\
+  !*** ./src/components/dataframe_options/modals/ShiftColumnModal.js ***!
   \*********************************************************************/
 
 /*!**********************************************************************!*\
@@ -708,6 +760,14 @@
 
 /*!***********************************************************************!*\
   !*** ./src/components/dataframe_options/modals/RandomSamplesModal.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ./src/components/dataframe_options/modals/RemoveColumnsModal.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ./src/components/dataframe_options/modals/SetResetIndexModal.js ***!
   \***********************************************************************/
 
 /*!*****************************************************************************!*\
