@@ -17,6 +17,7 @@ class DatasetHolder:
         self.object_columns = model["object_columns"]
         self.values = model["values"]
         self.df = pd.DataFrame(data=self.values, columns=self.columns)
+        self.df.index = model["index"]
 
     def columns_type(self, df):
         num_columns = df.select_dtypes(include=np.number).columns.tolist()
@@ -25,6 +26,7 @@ class DatasetHolder:
 
     def update_document(self):
         document = Dataset.objects(id=self.id)[0]
+        document.index = self.df.index.values.tolist()
         document.columns = self.df.columns.values.tolist()
         document.numerical_columns = self.df.select_dtypes(
             include=np.number).columns.tolist()
@@ -74,6 +76,7 @@ class DatasetHolder:
         new_df_values = new_df.values.tolist()
         new_dataset = Dataset()
         new_dataset.name = new_dataframe_value
+        new_dataset.index = new_df.index.values.tolist()
         new_dataset.columns = new_df_cols
         new_dataset.values = new_df_values
         new_dataset.numerical_columns = new_df.select_dtypes(

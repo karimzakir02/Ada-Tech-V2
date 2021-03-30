@@ -83,6 +83,7 @@ class AnalysisClass():
         dataset.author = author
         dataset.name = name
         data = pd.read_csv(path)
+        dataset.index = data.index.values.tolist()
         dataset.columns = data.columns.values.tolist()
         dataset.numerical_columns = data.select_dtypes(
             include=np.number).columns.tolist()
