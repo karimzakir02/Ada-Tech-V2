@@ -612,3 +612,45 @@ class AnalysisClass():
         data = NotebookSerializer(notebook).data
         data["dataset_names"] = list(notebook.datasets.keys())
         return Response(data, status=status.HTTP_200_OK)
+
+    @api_view(("POST",))
+    def rename_row_column(request):
+        id = request.data.get("id")
+        dataset_name = request.data.get("dataset")
+        axis = request.data.get("option")
+        from_value = request.data.get("from")
+        to_value = request.data.get("to")
+        new_dataframe = json.loads(request.data.get("new_dataframe"))
+        new_dataframe_value = request.data.get("new_dataframe_value")
+        dataset_document = request.session.get(f"{id}_{dataset_name}")
+        dataset = DatasetHolder(dataset_document)
+        doc, output = dataset.rename_row_column(axis, from_value, to_value,
+                                                new_dataframe,
+                                                new_dataframe_value)
+        notebook = Notebook.objects(id=id)[0]
+
+        if new_dataframe:
+            dataset_dict = {new_dataframe_value: str(doc.id)}
+            notebook.datasets.update(dataset_dict)
+            columns_dict = {new_dataframe_value: doc.columns}
+            num_columns_dict = {new_dataframe_value: doc.numerical_columns}
+            object_columns_dict = {new_dataframe_value: doc.object_columns}
+            serialized_data = DatasetSerializer(doc).data
+            request.session[f"{id}_{new_dataframe_value}"] = serialized_data
+        else:
+            columns_dict = {dataset_name: doc.columns}
+            num_columns_dict = {dataset_name: doc.numerical_columns}
+            object_columns_dict = {dataset_name: doc.object_columns}
+            serialized_data = DatasetSerializer(doc).data
+            request.session[f"{id}_{dataset_name}"] = serialized_data
+
+        notebook.output.append(output)
+        notebook.dataset_columns.update(columns_dict)
+        notebook.dataset_numerical_columns.update(num_columns_dict)
+        notebook.dataset_object_columns.update(object_columns_dict)
+        notebook.save()
+        data = NotebookSerializer(notebook).data
+        data["dataset_names"] = list(notebook.datasets.keys())
+        serialized_data = DatasetSerializer(doc).data
+        request.session[f"{id}_{dataset_name}"] = serialized_data
+        return Response(data, status=status.HTTP_200_OK)

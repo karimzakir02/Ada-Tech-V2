@@ -506,6 +506,23 @@ class DatasetHolder:
         document = self.update_document()
         return document, self.initial_output()
 
+    def rename_row_column(self, axis, from_value, to_value, new_dataframe,
+                          new_dataframe_value):
+        axis = int(axis)
+        if axis == 0:
+            if self.df.index.is_integer():
+                from_value = int(from_value)
+                to_value = int(to_value)
+            elif self.df.index.is_floating():
+                from_value = float(from_value)
+                to_value = float(to_value)
+        if new_dataframe:
+            new_df = self.df.rename({from_value: to_value}, axis=axis)
+            return self.new_dataset_return(new_df, new_dataframe_value)
+        self.df.rename({from_value: to_value}, axis=axis, inplace=True)
+        document = self.update_document()
+        return document, self.initial_output()
+
 
 class NotebookHolder:
 

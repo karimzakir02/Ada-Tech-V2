@@ -15,6 +15,7 @@ import RemoveColumnsModal from "./dataframe_options/modals/RemoveColumnsModal"
 import ShiftColumnModal from "./dataframe_options/modals/ShiftColumnModal"
 import SetResetIndexModal from "./dataframe_options/modals/SetResetIndexModal"
 import CombineDataModal from "./dataframe_options/modals/CombineDataModal"
+import RenameRowColumnModal from "./dataframe_options/modals/RenameRowColumnModal"
 
 export default class Notebook extends Component {
   constructor(props){
@@ -177,6 +178,8 @@ export default class Notebook extends Component {
         <ShiftColumnModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
         <SetResetIndexModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
         <CombineDataModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
+        <RenameRowColumnModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
+
       </div>
     );
   }

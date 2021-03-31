@@ -1,35 +1,3 @@
-/*! CommonJS bailout: exports.unstable_now(...) prevents optimization as exports is passed as call context at 10:121-141 */
-
-/*! CommonJS bailout: exports.unstable_now(...) prevents optimization as exports is passed as call context at 11:504-524 */
-
-/*! CommonJS bailout: exports.unstable_now(...) prevents optimization as exports is passed as call context at 12:312-332 */
-
-/*! CommonJS bailout: exports.unstable_now(...) prevents optimization as exports is passed as call context at 13:15-35 */
-
-/*! CommonJS bailout: exports.unstable_now(...) prevents optimization as exports is passed as call context at 16:248-268 */
-
-/*! CommonJS bailout: exports.unstable_now(...) prevents optimization as exports is passed as call context at 19:56-76 */
-
-/*! CommonJS bailout: exports.unstable_shouldYield(...) prevents optimization as exports is passed as call context at 16:106-134 */
-
-/*! CommonJS bailout: module.exports is used directly at 103:0-14 */
-
-/*! CommonJS bailout: module.exports is used directly at 12:0-14 */
-
-/*! CommonJS bailout: module.exports is used directly at 16:0-14 */
-
-/*! CommonJS bailout: module.exports is used directly at 18:2-16 */
-
-/*! CommonJS bailout: module.exports is used directly at 1:0-14 */
-
-/*! CommonJS bailout: module.exports is used directly at 65:0-14 */
-
-/*! CommonJS bailout: module.exports is used directly at 6:0-14 */
-
-/*! CommonJS bailout: this is used directly at 1476:37-41 */
-
-/*! CommonJS bailout: this is used directly at 1519:41-45 */
-
 /*! default exports */
 
 /*! dynamic exports */
@@ -159,6 +127,10 @@
 /*! export RemoveColumns [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*! export RemoveColumnsModal [provided] [no usage info] [missing usage info prevents renaming] */
+
+/*! export RenameRowColumn [provided] [no usage info] [missing usage info prevents renaming] */
+
+/*! export RenameRowColumnModal [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*! export Route [provided] [no usage info] [missing usage info prevents renaming] */
 
@@ -714,6 +686,10 @@
   !*** ./node_modules/prop-types/lib/ReactPropTypesSecret.js ***!
   \*************************************************************/
 
+/*!*************************************************************!*\
+  !*** ./src/components/dataframe_options/RenameRowColumn.js ***!
+  \*************************************************************/
+
 /*!**************************************************************!*\
   !*** ./node_modules/react-is/cjs/react-is.production.min.js ***!
   \**************************************************************/
@@ -801,6 +777,10 @@
 /*!***********************************************************************!*\
   !*** ./src/components/dataframe_options/modals/SetResetIndexModal.js ***!
   \***********************************************************************/
+
+/*!*************************************************************************!*\
+  !*** ./src/components/dataframe_options/modals/RenameRowColumnModal.js ***!
+  \*************************************************************************/
 
 /*!*****************************************************************************!*\
   !*** ./src/components/dataframe_options/modals/GroupByCalculationsModal.js ***!

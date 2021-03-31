@@ -14,6 +14,7 @@ import RemoveColumns from "./dataframe_options/RemoveColumns"
 import ShiftColumn from "./dataframe_options/ShiftColumn"
 import SetResetIndex from "./dataframe_options/SetResetIndex"
 import CombineData from "./dataframe_options/CombineData"
+import RenameRowColumn from "./dataframe_options/RenameRowColumn"
 
 export class DataframeOptions extends Component {
 
@@ -53,6 +54,7 @@ export class DataframeOptions extends Component {
           <ShiftColumn id={this.props.id} datasets={this.props.datasets} updateState={this.props.updateState} columns={this.props.columns}/>
           <SetResetIndex id={this.props.id} datasets={this.props.datasets} updateState={this.props.updateState} columns={this.props.columns}/>
           <CombineData id={this.props.id} datasets={this.props.datasets} updateState={this.props.updateState} columns={this.props.columns}/>
+          <RenameRowColumn id={this.props.id} datasets={this.props.datasets} updateState={this.props.updateState} columns={this.props.columns}/>
         </ul>
       </div>
   )
