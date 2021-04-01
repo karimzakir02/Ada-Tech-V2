@@ -128,6 +128,10 @@
 
 /*! export RemoveColumnsModal [provided] [no usage info] [missing usage info prevents renaming] */
 
+/*! export RemoveRows [provided] [no usage info] [missing usage info prevents renaming] */
+
+/*! export RemoveRowsModal [provided] [no usage info] [missing usage info prevents renaming] */
+
 /*! export RenameRowColumn [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*! export RenameRowColumnModal [provided] [no usage info] [missing usage info prevents renaming] */
@@ -638,6 +642,10 @@
   !*** ./src/components/dataframe_options/HandleNans.js ***!
   \********************************************************/
 
+/*!********************************************************!*\
+  !*** ./src/components/dataframe_options/RemoveRows.js ***!
+  \********************************************************/
+
 /*!*********************************************************!*\
   !*** ./src/components/dataframe_options/CombineData.js ***!
   \*********************************************************/
@@ -744,6 +752,10 @@
 
 /*!********************************************************************!*\
   !*** ./src/components/dataframe_options/modals/HandleNansModal.js ***!
+  \********************************************************************/
+
+/*!********************************************************************!*\
+  !*** ./src/components/dataframe_options/modals/RemoveRowsModal.js ***!
   \********************************************************************/
 
 /*!*********************************************************************!*\

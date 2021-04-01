@@ -112,7 +112,6 @@ export class SetResetIndexModal extends Component {
     });
     var column_select = document.getElementById("set_reset_index_modal_column_select");
     var checkbox = document.getElementById("set_reset_index_drop_checkbox");
-    console.log(event.target.value);
     if (event.target.value == "set") {
       column_select.disabled = false;
       checkbox.checked = true;
@@ -122,7 +121,6 @@ export class SetResetIndexModal extends Component {
       checkbox.checked = false;
     }
     M.FormSelect.init(column_select);
-    console.log(checkbox.checked);
     this.setState({
       checkbox_drop_value: checkbox.checked,
     });
@@ -161,7 +159,6 @@ export class SetResetIndexModal extends Component {
   handleClick() {
     const csrf = this.getCookie("csrftoken");
     let formData = new FormData();
-    console.log(this.state.checkbox_drop_value);
     formData.append("id", this.state.notebook_id);
     formData.append("dataset", this.state.select_dataset_value);
     formData.append("option", this.state.select_option_value);

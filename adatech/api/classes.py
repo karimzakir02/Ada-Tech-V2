@@ -523,6 +523,44 @@ class DatasetHolder:
         document = self.update_document()
         return document, self.initial_output()
 
+    def remove_rows(self, option, expression, new_dataframe,
+                    new_dataframe_value):
+        if option == "conditional":
+            connectives = {" and ": "&", " or ": "|"}
+            for column in self.columns:
+                if column in expression:
+                    expression = expression.replace(column,
+                                                    f"self.df['{column}']")
+            for connective, substitute in connectives.items():
+                if connective in expression:
+                    expression = expression.replace(connective, substitute)
+
+            code = parser.expr(expression).compile()
+            filtered_df = self.df[eval(code)]
+            index_to_remove = filtered_df.index.values.tolist()
+        else:
+            if ":" in expression:
+                split = expression.split(":")
+                x = int(split[0])
+                y = int(split[1])
+                filtered_df = self.df.loc[x:y]
+                index_to_remove = filtered_df.index.values.tolist()
+            elif "," in expression:
+                expression = expression.replace(" ", "")
+                split = expression.split(",")
+                index_to_remove = [int(i) for i in split]
+            else:
+                filtered_df = self.df.iloc[int(expression)]
+                index_to_remove = filtered_df.index.values.tolist()
+
+        if new_dataframe:
+            new_df = self.df.drop(index_to_remove, axis=0)
+            return self.new_dataset_return(new_df, new_dataframe_value)
+
+        self.df.drop(index_to_remove, axis=0, inplace=True)
+        document = self.update_document()
+        return document, self.initial_output()
+
 
 class NotebookHolder:
 

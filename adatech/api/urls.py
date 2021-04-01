@@ -26,6 +26,7 @@ urlpatterns = [
     path("set-reset-index", AnalysisClass.set_reset_index),
     path("combine-data", AnalysisClass.combine_data),
     path("rename-row-column", AnalysisClass.rename_row_column),
+    path("remove-rows", AnalysisClass.remove_rows)
 ]
 
 if settings.DEBUG:
