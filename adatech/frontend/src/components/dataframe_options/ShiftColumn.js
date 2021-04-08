@@ -19,7 +19,7 @@ export class ShiftColumn extends Component {
     this.prepareComponent = this.prepareComponent.bind(this);
     this.createDatasetSelect = this.createDatasetSelect.bind(this);
     this.createColumnSelect = this.createColumnSelect.bind(this);
-    this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.handleDatasetChange = this.handleDatasetChange.bind(this);
     this.handleColumnSelectChange = this.handleColumnSelectChange.bind(this);
     this.handleShiftByChange = this.handleShiftByChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
@@ -71,7 +71,7 @@ export class ShiftColumn extends Component {
     M.FormSelect.init(select);
   }
 
-  handleSelectChange(event) {
+  handleDatasetChange(event) {
     this.setState({
       select_dataset_value: event.target.value,
     })
@@ -116,7 +116,7 @@ export class ShiftColumn extends Component {
             <div class="collapsible-body">
                 <div class="row" style={{paddingTop: "6%", marginBottom:0}}>
                   <div class="input-field col s12 m6">
-                    <select id="shift_column_dataframe_select" onChange={this.handleSelectChange}></select>
+                    <select id="shift_column_dataframe_select" onChange={this.handleDatasetChange}></select>
                     <label>Dataframe:</label>
                   </div>
 

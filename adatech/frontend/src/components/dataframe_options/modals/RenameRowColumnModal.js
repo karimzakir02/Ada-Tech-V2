@@ -27,7 +27,7 @@ export class RenameRowColumnModal extends Component {
     }
     this.prepareComponent = this.prepareComponent.bind(this);
     this.createDatasetSelect = this.createDatasetSelect.bind(this);
-    this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.handleDatasetChange = this.handleDatasetChange.bind(this);
     this.handleOptionChange = this.handleOptionChange.bind(this);
     this.handleFromChange = this.handleFromChange.bind(this);
     this.handleToChange = this.handleToChange.bind(this);
@@ -70,14 +70,25 @@ export class RenameRowColumnModal extends Component {
       select_dataset_value: select_value,
     });
     M.FormSelect.init(select);
-    this.createColumnSelect(select.value);
   }
 
-
-  handleSelectChange(event) {
+  handleDatasetChange(event) {
     this.setState({
       select_dataset_value: event.target.value,
     });
+    if (this.state.select_option_value == "1") {
+      var select = document.getElementById("rename_row_column_modal_column_select");
+      select.innerHTML = "";
+      for (var column of this.props.columns[event.target.value]) {
+        select.options.add(new Option(column, column));
+      }
+      select.selectedIndex = 0;
+      M.FormSelect.init(select);
+      var selected = select.value;
+      this.setState({
+        multi_from_value: selected,
+      });
+    };
   }
 
   handleOptionChange(event) {
@@ -102,6 +113,7 @@ export class RenameRowColumnModal extends Component {
     else {
       var select = document.createElement("select");
       field.appendChild(select);
+      select.id = "rename_row_column_modal_column_select";
       var label = document.createElement("label");
       select.addEventListener("change", this.handleFromChange);
       label.innerHTML = "From:";
@@ -168,6 +180,11 @@ export class RenameRowColumnModal extends Component {
       headers: {csrf: csrf},
       body: formData,
     };
+
+    this.setState({
+      count: 0,
+    });
+
     fetch("/api/rename-row-column", requestOptions)
     .then((response) => response.json())
     .then((data) => this.props.updateState(data))
@@ -206,11 +223,11 @@ export class RenameRowColumnModal extends Component {
                   <div class="card" style={{backgroundColor: "#0f3741"}}>
                     <div class="card-content white-text">
                       <p style={{fontSize:"12pt"}}>
-                        Select the data you would like to sort <br /><br />
-                        Select the column by which you would like to sort your data <br /> <br />
-                        Determine the sorting order of your data <br /> <br />
-                        In case you would like your sorted data to be saved as a new dataframe,
-                        click the appropriate checkbox and enter the name for your new dataframe
+                        Rename the columns in your data or change the index of a particular record<br /><br />
+                        Choose which axis you want to change and enter the original value and the new value
+                        of your column/row<br /> <br />
+                        By default, the chosen dataset will be modified directly. If you would like to create
+                        a new dataset, check the appropriate box and enter the name for the new dataset.
                       </p>
                     </div>
                     <div class="card-action">
@@ -224,7 +241,7 @@ export class RenameRowColumnModal extends Component {
                   <div class="row" style={{paddingTop: "30%"}}>
 
                   <div class="input-field col s12 m6">
-                    <select id="rename_row_column_modal_dataframe_select" onChange={this.handleDataframeChange}></select>
+                    <select id="rename_row_column_modal_dataframe_select" onChange={this.handleDatasetChange}></select>
                     <label>Dataframe:</label>
                   </div>
 

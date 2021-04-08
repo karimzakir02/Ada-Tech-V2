@@ -19,7 +19,7 @@ export class GroupByCalculations extends Component {
     this.prepareComponent = this.prepareComponent.bind(this);
     this.createDatasetSelect = this.createDatasetSelect.bind(this);
     this.createColumnSelect = this.createColumnSelect.bind(this);
-    this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.handleDatasetChange = this.handleDatasetChange.bind(this);
     this.handleColumnSelectChange = this.handleColumnSelectChange.bind(this);
     this.handleCalculationsChange = this.handleCalculationsChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
@@ -71,7 +71,7 @@ export class GroupByCalculations extends Component {
     M.FormSelect.init(select);
   }
 
-  handleSelectChange(event) {
+  handleDatasetChange(event) {
     this.setState({
       select_dataset_value: event.target.value,
     })
@@ -121,7 +121,7 @@ export class GroupByCalculations extends Component {
             <div class="collapsible-body">
                 <div class="row" style={{paddingTop: "6%", marginBottom:0}}>
                   <div class="input-field col s12">
-                    <select id="group_by_calculations_dataframe_select" onChange={this.handleSelectChange}></select>
+                    <select id="group_by_calculations_dataframe_select" onChange={this.handleDatasetChange}></select>
                     <label>Dataframe:</label>
                   </div>
                   <div class="input-field col s6">

@@ -25,7 +25,7 @@ export class UniqueValuesModal extends Component {
     this.prepareComponent = this.prepareComponent.bind(this);
     this.createDatasetSelect = this.createDatasetSelect.bind(this);
     this.createColumnSelect = this.createColumnSelect.bind(this);
-    this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.handleDatasetChange = this.handleDatasetChange.bind(this);
     this.handleColumnSelectChange = this.handleColumnSelectChange.bind(this);
     this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
@@ -80,7 +80,7 @@ export class UniqueValuesModal extends Component {
     M.FormSelect.init(select);
   }
 
-  handleSelectChange(event) {
+  handleDatasetChange(event) {
     this.setState({
       select_dataset_value: event.target.value,
     });
@@ -118,6 +118,11 @@ export class UniqueValuesModal extends Component {
       headers: {csrf: csrf},
       body: formData,
     };
+
+    this.setState({
+      count: 0,
+    });
+
     fetch("/api/unique-values", requestOptions)
     .then((response) => response.json())
     .then((data) => this.props.updateState(data))
@@ -151,14 +156,15 @@ export class UniqueValuesModal extends Component {
             <h4>Unique Values</h4>
             <div class="divider"></div>
             <div class="row">
-              <div class="col s6" style={{paddingTop: "5vh"}}>
+              <div class="col s6" style={{paddingTop: "7vh"}}>
                 <div class="valign-wrapper modal-valign-wrapper">
                   <div class="card" style={{backgroundColor: "#0f3741"}}>
                     <div class="card-content white-text">
                       <p style={{fontSize:"12pt"}}>
-                        Select the data <br /><br />
+                        Find the unique values for a particular column in your data<br /><br />
                         Select the column for which you would like to see the unique values <br /> <br />
-                        Check the checkbox if you would like to see the number of times every value occurs in the column
+                        Check the checkbox if you would like the software to count the number of times
+                        a value occurs in the column
                       </p>
                     </div>
                     <div class="card-action">
@@ -171,7 +177,7 @@ export class UniqueValuesModal extends Component {
                 <div class="valign-wrapper modal-valign-wrapper">
                   <div class="row" style={{paddingTop: "25%"}}>
                     <div class="input-field col s12" id="unique_values_modal_select_field">
-                      <select id="unique_values_modal_select" onChange={this.handleSelectChange}></select>
+                      <select id="unique_values_modal_select" onChange={this.handleDatasetChange}></select>
                       <label>Dataframes:</label>
                     </div>
                     <div class="input-field col s12 m6">

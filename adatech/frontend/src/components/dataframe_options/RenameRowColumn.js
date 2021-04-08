@@ -19,7 +19,7 @@ export class RenameRowColumn extends Component {
     }
     this.prepareComponent = this.prepareComponent.bind(this);
     this.createDatasetSelect = this.createDatasetSelect.bind(this);
-    this.handleDataframeChange = this.handleDataframeChange.bind(this);
+    this.handleDatasetChange = this.handleDatasetChange.bind(this);
     this.handleOptionChange = this.handleOptionChange.bind(this);
     this.handleFromChange = this.handleFromChange.bind(this);
     this.handleToChange = this.handleToChange.bind(this);
@@ -60,11 +60,24 @@ export class RenameRowColumn extends Component {
     M.FormSelect.init(select);
   }
 
-  handleDataframeChange(event) {
+  handleDatasetChange(event) {
     this.setState({
       select_dataset_value: event.target.value,
     })
     // this.createColumnSelect(event.target.value);
+    if (this.state.select_option_value == "1") {
+      var select = document.getElementById("rename_row_column_column_select");
+      select.innerHTML = "";
+      for (var column of this.props.columns[event.target.value]) {
+        select.options.add(new Option(column, column));
+      }
+      select.selectedIndex = 0;
+      M.FormSelect.init(select);
+      var selected = select.value;
+      this.setState({
+        multi_from_value: selected,
+      });
+    };
   }
 
 
@@ -90,6 +103,7 @@ export class RenameRowColumn extends Component {
     else {
       var select = document.createElement("select");
       field.appendChild(select);
+      select.id = "rename_row_column_column_select";
       var label = document.createElement("label");
       select.addEventListener("change", this.handleFromChange);
       label.innerHTML = "From:";
@@ -101,7 +115,7 @@ export class RenameRowColumn extends Component {
       var selected = select.value;
       this.setState({
         multi_from_value: selected,
-      })
+      });
     }
   }
 
@@ -147,7 +161,7 @@ export class RenameRowColumn extends Component {
             <div class="collapsible-body">
                 <div class="row" style={{paddingTop: "6%", marginBottom:0}}>
                   <div class="input-field col s12 m6">
-                    <select id="rename_row_column_dataframe_select" onChange={this.handleDataframeChange}></select>
+                    <select id="rename_row_column_dataframe_select" onChange={this.handleDatasetChange}></select>
                     <label>Dataframe:</label>
                   </div>
 

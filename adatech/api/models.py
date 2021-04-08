@@ -12,6 +12,7 @@ class Dataset(Document):
     numerical_columns = fields.ListField()
     object_columns = fields.ListField()
     values = fields.ListField()
+    notebook = fields.StringField()
 
 
 class Notebook(Document):

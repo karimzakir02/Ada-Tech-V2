@@ -27,7 +27,7 @@ export class FilterModal extends Component {
     this.prepareComponent = this.prepareComponent.bind(this);
     this.createDatasetSelect = this.createDatasetSelect.bind(this);
     this.createColumnSelect = this.createColumnSelect.bind(this);
-    this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.handleDatasetChange = this.handleDatasetChange.bind(this);
     this.handleColumnSelectChange = this.handleColumnSelectChange.bind(this);
     this.handleFilterKeyChange = this.handleFilterKeyChange.bind(this);
     this.handleNewDataframeCheckboxChange = this.handleNewDataframeCheckboxChange.bind(this);
@@ -83,7 +83,7 @@ export class FilterModal extends Component {
     M.FormSelect.init(select);
   }
 
-  handleSelectChange(event) {
+  handleDatasetChange(event) {
     this.setState({
       select_dataset_value: event.target.value,
     });
@@ -140,6 +140,11 @@ export class FilterModal extends Component {
       headers: {csrf: csrf},
       body: formData,
     };
+
+    this.setState({
+      count: 0,
+    });
+
     fetch("/api/filter", requestOptions)
     .then((response) => response.json())
     .then((data) => this.props.updateState(data))
@@ -178,11 +183,10 @@ export class FilterModal extends Component {
                   <div class="card" style={{backgroundColor: "#0f3741"}}>
                     <div class="card-content white-text">
                       <p style={{fontSize:"12pt"}}>
-                        Select the data you would like to sort <br /><br />
-                        Select the column by which you would like to sort your data <br /> <br />
-                        Determine the sorting order of your data <br /> <br />
-                        In case you would like your sorted data to be saved as a new dataframe,
-                        click the appropriate checkbox and enter the name for your new dataframe
+                        Filter your data based on a custom condition<br /><br />
+                        Enter your custom condition using the provided template in the textbox <br /> <br />
+                        By default, the filtered data is not saved. If you would like to save it for future use,
+                        select the appropriate checkbox and enter the name for your new dataset
                       </p>
                     </div>
                     <div class="card-action">
@@ -193,13 +197,13 @@ export class FilterModal extends Component {
               </div>
               <div class="center col s6">
                 <div class="valign-wrapper modal-valign-wrapper">
-                  <div class="row" style={{paddingTop: "30%"}}>
+                  <div class="row" style={{paddingTop: "25%"}}>
                     <div class="input-field col s12">
-                      <select id="filter_modal_dataframe_select" onChange={this.handleSelectChange}></select>
+                      <select id="filter_modal_dataframe_select" onChange={this.handleDatasetChange}></select>
                       <label>Dataframe:</label>
                     </div>
                     <div class="input-field col s12">
-                      <input type="text" id="filter_modal_key_input" onChange={this.handleFilterKeyChange} />
+                      <input placeholder="(col1 == 'value') and (col2 > x)" type="text" id="filter_modal_key_input" onChange={this.handleFilterKeyChange} />
                       <label for="filter_modal_key_input">Value:</label>
                     </div>
                     <div class="col s12 m6" style={{paddingTop: "15px"}}>

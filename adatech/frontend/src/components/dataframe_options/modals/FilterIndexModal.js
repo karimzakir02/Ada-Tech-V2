@@ -26,7 +26,7 @@ export class FilterIndexModal extends Component {
     }
     this.prepareComponent = this.prepareComponent.bind(this);
     this.createDatasetSelect = this.createDatasetSelect.bind(this);
-    this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.handleDatasetChange = this.handleDatasetChange.bind(this);
     this.handleFilterExpressionChange = this.handleFilterExpressionChange.bind(this);
     this.handleFilterByChange = this.handleFilterByChange.bind(this);
     this.handleNewDataframeCheckboxChange = this.handleNewDataframeCheckboxChange.bind(this);
@@ -70,7 +70,7 @@ export class FilterIndexModal extends Component {
     this.createColumnSelect(select.value);
   }
 
-  handleSelectChange(event) {
+  handleDatasetChange(event) {
     this.setState({
       select_dataset_value: event.target.value,
     });
@@ -127,6 +127,11 @@ export class FilterIndexModal extends Component {
       headers: {csrf: csrf},
       body: formData,
     };
+
+    this.setState({
+      count: 0,
+    });
+
     fetch("/api/filter-index", requestOptions)
     .then((response) => response.json())
     .then((data) => this.props.updateState(data))
@@ -165,11 +170,11 @@ export class FilterIndexModal extends Component {
                   <div class="card" style={{backgroundColor: "#0f3741"}}>
                     <div class="card-content white-text">
                       <p style={{fontSize:"12pt"}}>
-                        Select the data you would like to sort <br /><br />
-                        Select the column by which you would like to sort your data <br /> <br />
-                        Determine the sorting order of your data <br /> <br />
-                        In case you would like your sorted data to be saved as a new dataframe,
-                        click the appropriate checkbox and enter the name for your new dataframe
+                        Filter your data using its index or rows to get a slice of the data<br /><br />
+                        Enter the start and end points for your query<br /> <br />
+                        Choose whether you would like to filter using the index of the data or the rows<br /> <br />
+                        By default, the filtered data is not saved. If you would like to save it for future use,
+                        select the appropriate checkbox and enter the name for your new dataset
                       </p>
                     </div>
                     <div class="card-action">
@@ -182,7 +187,7 @@ export class FilterIndexModal extends Component {
                 <div class="valign-wrapper modal-valign-wrapper">
                   <div class="row" style={{paddingTop: "30%"}}>
                     <div class="input-field col s12">
-                      <select id="filter_index_modal_dataframe_select" onChange={this.handleSelectChange}></select>
+                      <select id="filter_index_modal_dataframe_select" onChange={this.handleDatasetChange}></select>
                       <label>Dataframe:</label>
                     </div>
                     <div class="input-field col s12 m6">

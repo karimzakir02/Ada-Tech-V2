@@ -27,7 +27,7 @@ export class ShiftColumnModal extends Component {
     this.prepareComponent = this.prepareComponent.bind(this);
     this.createDatasetSelect = this.createDatasetSelect.bind(this);
     this.createColumnSelect = this.createColumnSelect.bind(this);
-    this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.handleDatasetChange = this.handleDatasetChange.bind(this);
     this.handleColumnSelectChange = this.handleColumnSelectChange.bind(this);
     this.handleShiftByChange = this.handleShiftByChange.bind(this);
     this.handleNewColumnCheckboxChange = this.handleNewColumnCheckboxChange.bind(this);
@@ -83,7 +83,7 @@ export class ShiftColumnModal extends Component {
     M.FormSelect.init(select);
   }
 
-  handleSelectChange(event) {
+  handleDatasetChange(event) {
     this.setState({
       select_dataset_value: event.target.value,
     });
@@ -140,6 +140,11 @@ export class ShiftColumnModal extends Component {
       headers: {csrf: csrf},
       body: formData,
     };
+
+    this.setState({
+      count: 0,
+    });
+
     fetch("/api/shift-column", requestOptions)
     .then((response) => response.json())
     .then((data) => this.props.updateState(data))
@@ -178,11 +183,10 @@ export class ShiftColumnModal extends Component {
                   <div class="card" style={{backgroundColor: "#0f3741"}}>
                     <div class="card-content white-text">
                       <p style={{fontSize:"12pt"}}>
-                        Select the data you would like to sort <br /><br />
-                        Select the column by which you would like to sort your data <br /> <br />
-                        Determine the sorting order of your data <br /> <br />
-                        In case you would like your sorted data to be saved as a new dataframe,
-                        click the appropriate checkbox and enter the name for your new dataframe
+                        Shift an existing column in your dataset by a certain amount<br /><br />
+                        Choose which column to shift and how much to shift it by <br /> <br />
+                        By default, the chosen column will be modified directly. If you would like to create
+                        a new column, check the appropriate box and enter the name for the new column.
                       </p>
                     </div>
                     <div class="card-action">
@@ -195,7 +199,7 @@ export class ShiftColumnModal extends Component {
                 <div class="valign-wrapper modal-valign-wrapper">
                   <div class="row" style={{paddingTop: "30%"}}>
                     <div class="input-field col s12">
-                      <select id="shift_column_modal_dataframe_select" onChange={this.handleSelectChange}></select>
+                      <select id="shift_column_modal_dataframe_select" onChange={this.handleDatasetChange}></select>
                       <label>Dataframe:</label>
                     </div>
 

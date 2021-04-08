@@ -8,7 +8,7 @@ import re
 
 class DatasetHolder:
 
-    def __init__(self, model):
+    def __init__(self, model, dataframe=None):
         self.id = str(model["id"])
         self.name = model["name"]
         self.author = model["author"]
@@ -16,8 +16,12 @@ class DatasetHolder:
         self.numerical_columns = model["numerical_columns"]
         self.object_columns = model["object_columns"]
         self.values = model["values"]
-        self.df = pd.DataFrame(data=self.values, columns=self.columns)
+        if dataframe is not None:
+            self.df = dataframe
+        else:
+            self.df = pd.DataFrame(data=self.values, columns=self.columns)
         self.df.index = model["index"]
+        self.notebook_id = model["notebook"]
 
     def columns_type(self, df):
         num_columns = df.select_dtypes(include=np.number).columns.tolist()
@@ -60,7 +64,7 @@ class DatasetHolder:
         try:
             df.fillna("NaN", inplace=True)
         except ValueError:
-            print("Passed")
+            pass
         first5 = df.head()
         basic_values = first5.values.tolist()
         last5 = df.tail()
@@ -83,6 +87,7 @@ class DatasetHolder:
             include=np.number).columns.tolist()
         new_dataset.object_columns = new_df.select_dtypes(
             exclude=np.number).columns.tolist()
+        new_dataset.notebook = self.notebook_id
         new_dataset.save()
 
         if len(new_df) > 20:
@@ -395,17 +400,17 @@ class DatasetHolder:
         code = parser.expr(formula).compile()
         self.df[column_name] = eval(code)
         document = self.update_document()
-        return self.initial_output(), document
+        return document, self.initial_output()
 
     def rolling_mean(self, new_col_name, column, by):
         self.df[new_col_name] = self.df[column].rolling(int(by)).mean()
         document = self.update_document()
-        return self.initial_output(), document
+        return document, self.initial_output()
 
     def rolling_sum(self, new_col_name, column, by):
         self.df[new_col_name] = self.df[column].rolling(int(by)).sum()
         document = self.update_document()
-        return self.initial_output(), document
+        return document, self.initial_output()
 
     def remove_columns(self, columns, new_dataframe, new_dataframe_value):
         if new_dataframe:
@@ -423,7 +428,7 @@ class DatasetHolder:
             column_name = column
         self.df[column_name] = self.df[column].shift(int(shift_by))
         document = self.update_document()
-        return self.initial_output(), document
+        return document. self.initial_output()
 
     def set_index(self, column, drop, new_dataframe, new_dataframe_value):
         if new_dataframe:
@@ -445,12 +450,6 @@ class DatasetHolder:
 
     def merge(self, right_dataset, left_on, right_on, how, indicator,
               left_suffix, right_suffix, new_dataframe, new_dataframe_value):
-        print("Right Dataset: ", right_dataset.name)
-        print("Left_on: ", left_on)
-        print("Right_on: ", right_on)
-        print("Indicator: ", indicator)
-        print("Left suffix", left_suffix)
-        print("Right suffix", right_suffix)
         right_dataframe = right_dataset.df
         if left_on == "auto":
             left_on = None
@@ -560,35 +559,3 @@ class DatasetHolder:
         self.df.drop(index_to_remove, axis=0, inplace=True)
         document = self.update_document()
         return document, self.initial_output()
-
-
-class NotebookHolder:
-
-    def __init__(self, model):
-        self.datasets = model.datasets
-        self.dataset_names = model.dataset_names
-        self.columns = model.dataset_columns
-        self.num_columns = {}
-        self.object_columns = {}
-
-    def add_dataset(self, dataset_name, dataset):
-        self.datasets[dataset_name] = dataset
-        self.dataset_names.append(dataset_name)
-        self.update_columns(dataset_name)
-
-    def update_columns(self, dataset_name):
-        columns = self.datasets[dataset_name].columns_info()
-        self.columns[dataset_name] = columns[0]
-        self.num_columns[dataset_name] = columns[1]
-        self.object_columns[dataset_name] = columns[3]
-
-
-class DatasetHolder2(DatasetHolder):
-
-    def __init__(self, document):
-        self.id_name = document.id_name
-        self.name = document.name
-        self.author = document.author
-        self.columns = document.columns
-        self.values = document.values
-        self.df = pd.DataFrame(data=self.values, columns=self.columns)

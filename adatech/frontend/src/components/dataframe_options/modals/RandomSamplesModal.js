@@ -26,7 +26,7 @@ export class RandomSamplesModal extends Component {
     this.prepareComponent = this.prepareComponent.bind(this);
     this.createDatasetSelect = this.createDatasetSelect.bind(this);
     this.createColumnSelect = this.createColumnSelect.bind(this);
-    this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.handleDatasetChange = this.handleDatasetChange.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleColumnSelectChange = this.handleColumnSelectChange.bind(this);
     this.handleRandomStateInputChange = this.handleRandomStateInputChange.bind(this);
@@ -84,7 +84,7 @@ export class RandomSamplesModal extends Component {
     M.FormSelect.init(select);
   }
 
-  handleSelectChange(event) {
+  handleDatasetChange(event) {
     this.setState({
       select_dataset_value: event.target.value,
     });
@@ -129,6 +129,11 @@ export class RandomSamplesModal extends Component {
       headers: {csrf: csrf},
       body: formData,
     };
+
+    this.setState({
+      count: 0,
+    });
+
     fetch("/api/random-samples", requestOptions)
     .then((response) => response.json())
     .then((data) => this.props.updateState(data))
@@ -157,7 +162,7 @@ export class RandomSamplesModal extends Component {
 
     render() {
       return(
-        <div class="modal modal-fixed-footer" id="random_samples_modal" onFocus={this.handleOpen} onBlur={this.handleClose}>
+        <div class="modal" id="random_samples_modal" onFocus={this.handleOpen} onBlur={this.handleClose}>
           <div class="modal-content">
             <h4>Random Samples</h4>
             <div class="divider"></div>
@@ -167,10 +172,11 @@ export class RandomSamplesModal extends Component {
                   <div class="card" style={{backgroundColor: "#0f3741"}}>
                     <div class="card-content white-text">
                       <p style={{fontSize:"12pt"}}>
-                        Select the data to sample <br /><br />
-                        Enter the number of samples you would like to see, or enter a decimal to see a fraction of your data <br /> <br />
-                        Choose specific columns to sample <br /><br />
-                        Enter a random state to ensure reproducable results
+                        Get random samples of your data to get a quick overview of the dataset<br /><br />
+                        Enter the number of samples to display, or enter a decimal to see a
+                        fraction of your data<br /> <br />
+                        Choose specific columns to sample. By default, all are selected <br /><br />
+                        To create reproducable results, enter a custom random state in the textbox
                       </p>
                     </div>
                     <div class="card-action">
@@ -183,7 +189,7 @@ export class RandomSamplesModal extends Component {
                 <div class="valign-wrapper modal-valign-wrapper">
                   <div class="row" style={{paddingTop: "25%"}}>
                     <div class="input-field col s12 m6" id="random_samples_modal_select_field">
-                      <select id="random_samples_modal_select" onChange={this.handleSelectChange}></select>
+                      <select id="random_samples_modal_select" onChange={this.handleDatasetChange}></select>
                       <label>Dataframes</label>
                     </div>
                     <div class="input-field col s12 m6">

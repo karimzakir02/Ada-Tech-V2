@@ -27,7 +27,7 @@ export class RemoveColumnsModal extends Component {
     this.prepareComponent = this.prepareComponent.bind(this);
     this.createDatasetSelect = this.createDatasetSelect.bind(this);
     this.createColumnSelect = this.createColumnSelect.bind(this);
-    this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.handleDatasetChange = this.handleDatasetChange.bind(this);
     this.handleColumnSelectChange = this.handleColumnSelectChange.bind(this);
     this.handleNewDataframeCheckboxChange = this.handleNewDataframeCheckboxChange.bind(this);
     this.handleNewDataframeInputChange = this.handleNewDataframeInputChange.bind(this);
@@ -82,7 +82,7 @@ export class RemoveColumnsModal extends Component {
     M.FormSelect.init(select);
   }
 
-  handleSelectChange(event) {
+  handleDatasetChange(event) {
     this.setState({
       select_dataset_value: event.target.value,
     });
@@ -139,6 +139,11 @@ export class RemoveColumnsModal extends Component {
       headers: {csrf: csrf},
       body: formData,
     };
+
+    this.setState({
+      count: 0,
+    });
+
     fetch("/api/remove-columns", requestOptions)
     .then((response) => response.json())
     .then((data) => this.props.updateState(data))
@@ -177,11 +182,10 @@ export class RemoveColumnsModal extends Component {
                   <div class="card" style={{backgroundColor: "#0f3741"}}>
                     <div class="card-content white-text">
                       <p style={{fontSize:"12pt"}}>
-                        Select the data you would like to sort <br /><br />
-                        Select the column by which you would like to sort your data <br /> <br />
-                        Determine the sorting order of your data <br /> <br />
-                        In case you would like your sorted data to be saved as a new dataframe,
-                        click the appropriate checkbox and enter the name for your new dataframe
+                        Remove selected columns of your data to create a more focused dataset<br /><br />
+                        Select the columns to remove. You can remove multiple columns at a time<br /> <br />
+                        By default, the chosen dataset will be modified directly. If you would like to create
+                        a new dataset, check the appropriate box and enter the name for the new dataset.
                       </p>
                     </div>
                     <div class="card-action">
@@ -194,7 +198,7 @@ export class RemoveColumnsModal extends Component {
                 <div class="valign-wrapper modal-valign-wrapper">
                   <div class="row" style={{paddingTop: "30%"}}>
                     <div class="input-field col s12 m6">
-                      <select id="remove_columns_modal_dataframe_select" onChange={this.handleSelectChange}></select>
+                      <select id="remove_columns_modal_dataframe_select" onChange={this.handleDatasetChange}></select>
                       <label>Dataframe:</label>
                     </div>
 

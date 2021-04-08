@@ -28,7 +28,7 @@ export class SortModal extends Component {
     this.prepareComponent = this.prepareComponent.bind(this);
     this.createDatasetSelect = this.createDatasetSelect.bind(this);
     this.createColumnSelect = this.createColumnSelect.bind(this);
-    this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.handleDatasetChange = this.handleDatasetChange.bind(this);
     this.handleColumnSelectChange = this.handleColumnSelectChange.bind(this);
     this.handleSortOrderChange = this.handleSortOrderChange.bind(this);
     this.handleMissingPositionChange = this.handleMissingPositionChange.bind(this);
@@ -85,7 +85,7 @@ export class SortModal extends Component {
     M.FormSelect.init(select);
   }
 
-  handleSelectChange(event) {
+  handleDatasetChange(event) {
     this.setState({
       select_dataset_value: event.target.value,
     });
@@ -149,6 +149,11 @@ export class SortModal extends Component {
       headers: {csrf: csrf},
       body: formData,
     };
+
+    this.setState({
+      count: 0,
+    });
+
     fetch("/api/sort", requestOptions)
     .then((response) => response.json())
     .then((data) => this.props.updateState(data))
@@ -187,11 +192,12 @@ export class SortModal extends Component {
                   <div class="card" style={{backgroundColor: "#0f3741"}}>
                     <div class="card-content white-text">
                       <p style={{fontSize:"12pt"}}>
-                        Select the data you would like to sort <br /><br />
-                        Select the column by which you would like to sort your data <br /> <br />
-                        Determine the sorting order of your data <br /> <br />
-                        In case you would like your sorted data to be saved as a new dataframe,
-                        click the appropriate checkbox and enter the name for your new dataframe
+                        Sort your data using a particular column<br /><br />
+                        Pick the column to sort by and the sort order<br /> <br />
+                        In case of missing data, determine the position in which missing data
+                        should be placed <br /> <br />
+                        By default, the chosen dataset will be modified directly. If you would like to create
+                        a new dataset, check the appropriate box and enter the name for the new dataset.
                       </p>
                     </div>
                     <div class="card-action">
@@ -204,7 +210,7 @@ export class SortModal extends Component {
                 <div class="valign-wrapper modal-valign-wrapper">
                   <div class="row" style={{paddingTop: "30%"}}>
                     <div class="input-field col s12 m6">
-                      <select id="sort_modal_dataframe_select" onChange={this.handleSelectChange}></select>
+                      <select id="sort_modal_dataframe_select" onChange={this.handleDatasetChange}></select>
                       <label>Dataframe:</label>
                     </div>
                     <div class="input-field col s12 m6">

@@ -158,10 +158,29 @@ export class CombineDataModal extends Component {
   }
 
   handleOptionChange(event) {
-    console.log(event.target.innerHTML);
     this.setState({
       chosen_option: event.target.innerHTML,
-    })
+    });
+    var card = document.getElementById("combine_data_modal_card_description");
+    if (event.target.innerHTML == "horizontal") {
+      var description = `
+      Horizontally combine two datasets based on existing columns or index<br /><br />
+      Choose how to combine the data, and whether you would like to add an indicator to your combined dataset <br /><br />
+      In case of common columns, you can add a custom suffix to the columns to indicate where a particular column came from <br /><br />
+      By default, the feature adds new data to the left dataset; however, you can choose to create a new dataset with a new name
+      `
+      card.innerHTML = description
+    }
+    else {
+      var description = `
+      Vertically combine two datasets <br /><br />
+      Choose how to combine the data, and whether you would like sort it or add an indicator to your combine dataset <br /><br />
+      To avoid any index repeats/overlap, you can choose to ignore the index when combining the data<br /><br />
+      By default, the feature adds new data to the left dataset; however, you can choose to create a new dataset with a new name
+      `
+      card.innerHTML = description
+    }
+
   }
 
   handleLeftDataframeChange(event) {
@@ -312,7 +331,6 @@ export class CombineDataModal extends Component {
     formData.append("vertical_how", this.state.select_vertical_how_value);
 
     formData.append("sort", JSON.stringify(this.state.checkbox_sort_value));
-    console.log(this.state.chosen_option);
     formData.append("ignore_index", JSON.stringify(this.state.checkbox_ignore_index_value));
 
 
@@ -321,6 +339,11 @@ export class CombineDataModal extends Component {
       headers: {csrf: csrf},
       body: formData,
     };
+
+    this.setState({
+      count: 0,
+    });
+
     fetch("/api/combine-data", requestOptions)
     .then((response) => response.json())
     .then((data) => this.props.updateState(data))
@@ -358,11 +381,11 @@ export class CombineDataModal extends Component {
                 <div class="valign-wrapper modal-valign-wrapper">
                   <div class="card" style={{backgroundColor: "#0f3741"}}>
                     <div class="card-content white-text">
-                      <p style={{fontSize:"12pt"}}>
-                        Select the data <br /><br />
-                        Select the column for which you would like to find missing values <br /> <br />
-                        Check the checkbox if a custom symbol denotes the missing values (not NaN) <br /> <br />
-                        Enter the custom symbol in the textbox
+                      <p style={{fontSize:"12pt"}} id="combine_data_modal_card_description">
+                      Horizontally combine two datasets based on existing columns or index<br /><br />
+                      Choose how to combine your data, and whether you would like to add an indicator to your combined dataset <br /><br />
+                      In case of common columns, you can add a custom suffix to the columns to indicate where a particular column came from <br /><br />
+                      By default, the feature adds new data to the left dataset; however, you can choose to create an entirely new dataset with a new name to use in the future
                       </p>
                     </div>
                     <div class="card-action">
@@ -378,7 +401,7 @@ export class CombineDataModal extends Component {
                 </ul>
 
                 <div id="horizontal">
-                  <div class="row" style={{paddingTop: "12%"}}>
+                  <div class="row" style={{paddingTop: "15%"}}>
 
                     <div class="input-field col s12 m6">
                       <select class="combine_data_modal_left_dataframe_select" onChange={this.handleLeftDataframeChange}></select>
@@ -399,7 +422,6 @@ export class CombineDataModal extends Component {
                       <select id="combine_data_modal_right_on_select" onChange={this.handleRightOnChange}></select>
                       <label>Right on:</label>
                     </div>
-
 
                     <div class="input-field col s12 m6">
                       <select id="combine_data_modal_horizontal_how_select" onChange={this.handleHorizontalHowChange}>
@@ -448,7 +470,7 @@ export class CombineDataModal extends Component {
                 </div>
 
                 <div id="vertical">
-                  <div class="row" style={{paddingTop: "12%"}}>
+                  <div class="row" style={{paddingTop: "15%"}}>
 
                     <div class="input-field col s12 m6">
                       <select class="combine_data_modal_left_dataframe_select" onChange={this.handleLeftDataframeChange}></select>

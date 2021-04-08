@@ -24,6 +24,7 @@ export default class Notebook extends Component {
     this.getNotebookDetails = this.getNotebookDetails.bind(this);
     this.uploadFile = this.uploadFile.bind(this);
     this.updateState = this.updateState.bind(this);
+    this.handleNotebookClose = this.handleNotebookClose.bind(this);
     this.state = {
       id: this.props.match.params.id,
       isAuthor: false,
@@ -33,6 +34,8 @@ export default class Notebook extends Component {
       numerical_columns: [],
     }
     this.id = this.props.match.params.id;
+    // window.addEventListener("beforeunload", this.handleNotebookClose);
+    // maybe try it with something else rather than window
     this.getNotebookDetails();
   }
 
@@ -89,11 +92,13 @@ export default class Notebook extends Component {
     var output_div = document.getElementById("output_div");
     output_div.innerHTML = "";
     if (this.state.output.length == 0){
-      output_div.innerHTML = "Hey! Welcome to your notebook!";
-      output_div.style.paddingLeft = "20%";
+      output_div.innerHTML = "Hey! Welcome to your notebook<br />If you're unsure what a feature does, check out the options section for more settings and a description of the feature";
+      output_div.style.paddingTop = "1%";
+      output_div.setAttribute("align", "center");
     }
     else {
-      output_div.style.paddingLeft = 0;
+      output_div.style.paddingTop = 0;
+      output_div.setAttribute("align", "left");
       for (var output of this.state.output) {
         var div = document.createElement("div");
         div.className = "output section"
@@ -145,9 +150,23 @@ export default class Notebook extends Component {
       }
     }
 
+  handleNotebookClose() {
+    console.log("handleClose Triggered");
+    let formData = new FormData();
+    formData.append("id", this.state.id);
+    formData.append("datasets", JSON.stringify(this.state.datasets))
+    const csrf = this.getCookie("csrftoken");
+    const requestOptions = {
+      method: "POST",
+      headers: {csrf: csrf},
+      body: formData,
+    };
+    fetch("/api/close-notebook", requestOptions)
+  }
+
   render() {
     return (
-      <div>
+      <div beforeUnload={this.handleNotebookClose}>
         <Sidenav id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
         <div class="row" style={{padding: "10px", paddingLeft: "15%"}}>
           <div class="col s11" style={{padding: "10px"}}>

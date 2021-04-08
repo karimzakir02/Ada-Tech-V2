@@ -16,7 +16,9 @@ export class SetResetIndex extends Component {
       select_column_value: null,
     }
     this.prepareComponent = this.prepareComponent.bind(this);
-    this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.createDatasetSelect = this.createDatasetSelect.bind(this);
+    this.createColumnSelect = this.createColumnSelect.bind(this);
+    this.handleDatasetChange = this.handleDatasetChange.bind(this);
     this.handleColumnSelectChange = this.handleColumnSelectChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
   };
@@ -67,7 +69,7 @@ export class SetResetIndex extends Component {
     M.FormSelect.init(select);
   }
 
-  handleSelectChange(event) {
+  handleDatasetChange(event) {
     this.setState({
       select_dataset_value: event.target.value,
     });
@@ -110,7 +112,7 @@ export class SetResetIndex extends Component {
                 <div class="row" style={{paddingTop: "6%", marginBottom:0}}>
 
                   <div class="input-field col s6">
-                    <select id="set_reset_index_dataframe_select" onChange={this.handleSelectChange}></select>
+                    <select id="set_reset_index_dataframe_select" onChange={this.handleDatasetChange}></select>
                     <label>Dataframe:</label>
                   </div>
 

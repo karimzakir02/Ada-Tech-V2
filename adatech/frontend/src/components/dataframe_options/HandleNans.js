@@ -17,7 +17,9 @@ export class HandleNans extends Component {
       select_drop_by_value: "0",
     }
     this.prepareComponent = this.prepareComponent.bind(this);
-    this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.handleDatasetChange = this.handleDatasetChange.bind(this);
+    this.createColumnSelect = this.createColumnSelect.bind(this);
+    this.handleDatasetChange = this.handleDatasetChange.bind(this);
     this.handleColumnSelectChange = this.handleColumnSelectChange.bind(this);
     this.handleDropSelectChange = this.handleDropSelectChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
@@ -73,7 +75,7 @@ export class HandleNans extends Component {
     M.FormSelect.init(select);
   }
 
-  handleSelectChange(event) {
+  handleDatasetChange(event) {
     this.setState({
       select_dataset_value: event.target.value,
     })
@@ -130,7 +132,7 @@ export class HandleNans extends Component {
             <div class="collapsible-body">
                 <div class="row" style={{paddingTop: "6%", marginBottom:0}}>
                   <div class="input-field col s12">
-                    <select id="handle_nans_select" onChange={this.handleSelectChange}></select>
+                    <select id="handle_nans_select" onChange={this.handleDatasetChange}></select>
                     <label>Dataframe:</label>
                   </div>
                   <div class="input-field col s6">

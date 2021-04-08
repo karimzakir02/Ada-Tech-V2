@@ -26,7 +26,7 @@ export class RemoveRowsModal extends Component {
     }
     this.prepareComponent = this.prepareComponent.bind(this);
     this.createDatasetSelect = this.createDatasetSelect.bind(this);
-    this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.handleDatasetChange = this.handleDatasetChange.bind(this);
     this.handleOptionChange = this.handleOptionChange.bind(this);
     this.handleExpressionChange = this.handleExpressionChange.bind(this);
     this.handleNewDataframeCheckboxChange = this.handleNewDataframeCheckboxChange.bind(this);
@@ -69,7 +69,7 @@ export class RemoveRowsModal extends Component {
     M.FormSelect.init(select);
   }
 
-  handleSelectChange(event) {
+  handleDatasetChange(event) {
     this.setState({
       select_dataset_value: event.target.value,
     });
@@ -130,6 +130,11 @@ export class RemoveRowsModal extends Component {
       headers: {csrf: csrf},
       body: formData,
     };
+
+    this.setState({
+      count: 0,
+    });
+
     fetch("/api/remove-rows", requestOptions)
     .then((response) => response.json())
     .then((data) => this.props.updateState(data))
@@ -168,11 +173,11 @@ export class RemoveRowsModal extends Component {
                   <div class="card" style={{backgroundColor: "#0f3741"}}>
                     <div class="card-content white-text">
                       <p style={{fontSize:"12pt"}}>
-                        Select the data you would like to sort <br /><br />
-                        Select the column by which you would like to sort your data <br /> <br />
-                        Determine the sorting order of your data <br /> <br />
-                        In case you would like your sorted data to be saved as a new dataframe,
-                        click the appropriate checkbox and enter the name for your new dataframe
+                        Remove particular rows from your data based on a condition, the index, or row number<br /><br />
+                        Choose how you would like to remove the rows and enter the condition or the start and end points
+                        in the textbox<br /> <br />
+                        By default, the chosen dataset will be modified directly. If you would like to create
+                        a new dataset, check the appropriate box and enter the name for the new dataset.
                       </p>
                     </div>
                     <div class="card-action">
@@ -186,7 +191,7 @@ export class RemoveRowsModal extends Component {
                   <div class="row" style={{paddingTop: "30%"}}>
 
                     <div class="input-field col s12">
-                      <select id="remove_rows_modal_dataframe_select" onChange={this.handleSelectChange}></select>
+                      <select id="remove_rows_modal_dataframe_select" onChange={this.handleDatasetChange}></select>
                       <label>Dataframe:</label>
                     </div>
 

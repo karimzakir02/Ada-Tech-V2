@@ -27,7 +27,7 @@ export class FindNansModal extends Component {
     this.prepareComponent = this.prepareComponent.bind(this);
     this.createDatasetSelect = this.createDatasetSelect.bind(this);
     this.createColumnSelect = this.createColumnSelect.bind(this);
-    this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.handleDatasetChange = this.handleDatasetChange.bind(this);
     this.handleColumnSelectChange = this.handleColumnSelectChange.bind(this);
     this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
     this.handleCustomSymbolInputChange = this.handleCustomSymbolInputChange.bind(this);
@@ -85,7 +85,7 @@ export class FindNansModal extends Component {
     M.FormSelect.init(select);
   }
 
-  handleSelectChange(event) {
+  handleDatasetChange(event) {
     this.setState({
       select_dataset_value: event.target.value,
     });
@@ -139,6 +139,11 @@ export class FindNansModal extends Component {
       headers: {csrf: csrf},
       body: formData,
     };
+
+    this.setState({
+      count: 0,
+    });
+
     fetch("/api/find-nans", requestOptions)
     .then((response) => response.json())
     .then((data) => this.props.updateState(data))
@@ -177,10 +182,10 @@ export class FindNansModal extends Component {
                   <div class="card" style={{backgroundColor: "#0f3741"}}>
                     <div class="card-content white-text">
                       <p style={{fontSize:"12pt"}}>
-                        Select the data <br /><br />
-                        Select the column for which you would like to find missing values <br /> <br />
-                        Check the checkbox if a custom symbol denotes the missing values (not NaN) <br /> <br />
-                        Enter the custom symbol in the textbox
+                        Find the missing values in your data<br /><br />
+                        Select the columns which you would like to check. By default, all columns are selected<br /> <br />
+                        In case the missing data is denoted by a custom symbol (not NaN),
+                        check the appropriate box and enter the custom symbol
                       </p>
                     </div>
                     <div class="card-action">
@@ -193,7 +198,7 @@ export class FindNansModal extends Component {
                 <div class="valign-wrapper modal-valign-wrapper">
                   <div class="row" style={{paddingTop: "25%"}}>
                     <div class="input-field col s12">
-                      <select id="find_nans_modal_select" onChange={this.handleSelectChange}></select>
+                      <select id="find_nans_modal_select" onChange={this.handleDatasetChange}></select>
                       <label>Dataframes:</label>
                     </div>
                     <div class="input-field col s12 m6">

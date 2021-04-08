@@ -17,7 +17,7 @@ export class FilterIndex extends Component {
     }
     this.prepareComponent = this.prepareComponent.bind(this);
     this.createDatasetSelect = this.createDatasetSelect.bind(this);
-    this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.handleDatasetChange = this.handleDatasetChange.bind(this);
     this.handleFilterExpressionChange = this.handleFilterExpressionChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
   };
@@ -55,7 +55,7 @@ export class FilterIndex extends Component {
     M.FormSelect.init(select);
   }
 
-  handleSelectChange(event) {
+  handleDatasetChange(event) {
     this.setState({
       select_dataset_value: event.target.value,
     })
@@ -94,7 +94,7 @@ export class FilterIndex extends Component {
             <div class="collapsible-body">
                 <div class="row" style={{paddingTop: "6%", marginBottom:0}}>
                   <div class="input-field col s12">
-                    <select id="filter_index_dataframe_select" onChange={this.handleSelectChange}></select>
+                    <select id="filter_index_dataframe_select" onChange={this.handleDatasetChange}></select>
                     <label>Dataframe:</label>
                   </div>
                   <div class="input-field col s12">

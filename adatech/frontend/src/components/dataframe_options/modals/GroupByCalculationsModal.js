@@ -29,7 +29,7 @@ export class GroupByCalculationsModal extends Component {
     this.createDatasetSelect = this.createDatasetSelect.bind(this);
     this.createColumnSelect = this.createColumnSelect.bind(this);
     this.createGroupByColumnSelect = this.createGroupByColumnSelect.bind(this);
-    this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.handleDatasetChange = this.handleDatasetChange.bind(this);
     this.handleColumnSelectChange = this.handleColumnSelectChange.bind(this);
     this.handleGroupByColumnSelectChange = this.handleGroupByColumnSelectChange.bind(this);
     this.handleCalculationsChange = this.handleCalculationsChange.bind(this);
@@ -101,7 +101,7 @@ export class GroupByCalculationsModal extends Component {
     M.FormSelect.init(select);
   }
 
-  handleSelectChange(event) {
+  handleDatasetChange(event) {
     this.setState({
       select_dataset_value: event.target.value,
     });
@@ -144,7 +144,6 @@ export class GroupByCalculationsModal extends Component {
   handleClick() {
     const csrf = this.getCookie("csrftoken");
     let formData = new FormData();
-    console.log(this.state.select_calculations_value);
     formData.append("id", this.state.notebook_id);
     formData.append("dataset", this.state.select_dataset_value);
     formData.append("columns", JSON.stringify(this.state.select_columns_value));
@@ -155,6 +154,11 @@ export class GroupByCalculationsModal extends Component {
       headers: {csrf: csrf},
       body: formData,
     };
+
+    this.setState({
+      count: 0,
+    });
+
     fetch("/api/group-by-calculations", requestOptions)
     .then((response) => response.json())
     .then((data) => this.props.updateState(data))
@@ -193,11 +197,10 @@ export class GroupByCalculationsModal extends Component {
                   <div class="card" style={{backgroundColor: "#0f3741"}}>
                     <div class="card-content white-text">
                       <p style={{fontSize:"12pt"}}>
-                        Select the data you would like to sort <br /><br />
-                        Select the column by which you would like to sort your data <br /> <br />
-                        Determine the sorting order of your data <br /> <br />
-                        In case you would like your sorted data to be saved as a new dataframe,
-                        click the appropriate checkbox and enter the name for your new dataframe
+                        Get a statistical summary of your data based on particular column and groups<br /><br />
+                        Select the columns to display and which column should be used to group the records<br /> <br />
+                        Select one or multiple statistical measures you would like to see in your table to get
+                        a detailed summary of your data
                       </p>
                     </div>
                     <div class="card-action">
@@ -210,7 +213,7 @@ export class GroupByCalculationsModal extends Component {
                 <div class="valign-wrapper modal-valign-wrapper">
                   <div class="row" style={{paddingTop: "30%"}}>
                     <div class="input-field col s12 m6">
-                      <select id="group_by_calculations_modal_dataframe_select" onChange={this.handleSelectChange}></select>
+                      <select id="group_by_calculations_modal_dataframe_select" onChange={this.handleDatasetChange}></select>
                       <label>Dataframe:</label>
                     </div>
                     <div class="input-field col s12 m6">

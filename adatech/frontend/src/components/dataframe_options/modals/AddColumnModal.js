@@ -27,7 +27,7 @@ export class AddColumnModal extends Component {
     this.prepareComponent = this.prepareComponent.bind(this);
     this.createDatasetSelect = this.createDatasetSelect.bind(this);
     this.createColumnSelect = this.createColumnSelect.bind(this);
-    this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.handleDatasetChange = this.handleDatasetChange.bind(this);
     this.handleNewColumnNameChange = this.handleNewColumnNameChange.bind(this);
     this.handleOptionChange = this.handleOptionChange.bind(this);
     this.handleColumnSelectChange = this.handleColumnSelectChange.bind(this);
@@ -83,7 +83,7 @@ export class AddColumnModal extends Component {
     M.FormSelect.init(select);
   }
 
-  handleSelectChange(event) {
+  handleDatasetChange(event) {
     this.setState({
       select_dataset_value: event.target.value,
     });
@@ -142,6 +142,9 @@ export class AddColumnModal extends Component {
       headers: {csrf: csrf},
       body: formData,
     };
+    this.setState({
+      count: 0,
+    });
     fetch("/api/add-column", requestOptions)
     .then((response) => response.json())
     .then((data) => this.props.updateState(data))
@@ -180,10 +183,11 @@ export class AddColumnModal extends Component {
                   <div class="card" style={{backgroundColor: "#0f3741"}}>
                     <div class="card-content white-text">
                       <p style={{fontSize:"12pt"}}>
-                        Select the data to which you would like to add a new column <br /><br />
-                        Enter the new column name and decide whether you would like to type a custom expression or using existing functions<br /> <br />
-                        Enter the custom expression or decide on which column you would like to apply the exisitng functions to <br /> <br />
-                        In case you are using existing functions, make sure to enter the correct parameters
+                        Add a new column to your data to reflect a new variable or feature <br /><br />
+                        You can either create a column from a custom formula, or use already predetermined funcitons
+                        from the dropdown menu <br /><br />
+                        Take a look at the placeholder of the placeholder of the formula field to understand
+                        what syntax our formulas follow
                       </p>
                     </div>
                     <div class="card-action">
@@ -197,7 +201,7 @@ export class AddColumnModal extends Component {
                   <div class="row" style={{paddingTop: "30%"}}>
 
                     <div class="input-field col s12 m6">
-                      <select id="add_column_modal_dataframe_select" onChange={this.handleSelectChange}></select>
+                      <select id="add_column_modal_dataframe_select" onChange={this.handleDatasetChange}></select>
                       <label>Dataframe:</label>
                     </div>
 

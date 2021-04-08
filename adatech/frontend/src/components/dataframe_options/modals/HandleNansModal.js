@@ -40,7 +40,7 @@ export class HandleNansModal extends Component {
     this.createDatasetSelect = this.createDatasetSelect.bind(this);
     this.createColumnSelect = this.createColumnSelect.bind(this);
 
-    this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.handleDatasetChange = this.handleDatasetChange.bind(this);
     this.handleColumnSelectChange = this.handleColumnSelectChange.bind(this);
     this.handleCustomSymbolCheckboxChange = this.handleCustomSymbolCheckboxChange.bind(this);
     this.handleCustomSymbolInputChange = this.handleCustomSymbolInputChange.bind(this);
@@ -131,7 +131,41 @@ export class HandleNansModal extends Component {
   handleOptionChange(event) {
     this.setState({
       chosen_option: event.target.innerHTML,
-    })
+    });
+    var card = document.getElementById("handle_nans_modal_description")
+    if (event.target.innerHTML == "drop"){
+      var description = `
+      Handle your missing data by dropping records/variables with missing data. Select the columns
+      to which this method will be applied and choose to drop rows or columns<br /> <br />
+      In case the missing data is denoted by a custom symbol (not NaN),
+      check the appropriate box and enter the custom symbol <br /> <br />
+      The changes will be applied directly to the dataset. If you would like to create a new dataset,
+      check the appropriate box and enter the new name
+      `
+      card.innerHTML = description
+    }
+    else if (event.target.innerHTML == "substitute") {
+      var description = `
+      Handle your missing data by substituting the missing data. Select the columns to which this method
+      will be applied and choose your substitute for the missing data<br /><br />
+      In case the missing data is denoted by a custom symbol (not NaN),
+      check the appropriate box and enter the custom symbol <br /> <br />
+      The changes will be applied directly to the dataset. If you would like to create a new dataset,
+      check the appropriate box and enter the new name
+      `
+      card.innerHTML = description
+    }
+    else {
+      var description = `
+      Handle your missing data by imputing it. Select the numerical columns to which this method will be applied
+      and choose the appropriate imputing strategy<br /> <br />
+      In case the missing data is denoted by a custom symbol (not NaN),
+      check the appropriate box and enter the custom symbol <br /> <br />
+      The changes will be applied directly to the dataset. If you would like to create a new dataset,
+      check the appropriate box and enter the new name
+      `
+      card.innerHTML = description
+    }
   }
 
   handleDropByChange(event) {
@@ -152,10 +186,21 @@ export class HandleNansModal extends Component {
     });
   }
 
-  handleSelectChange(event) {
+  handleDatasetChange(event) {
     this.setState({
       select_dataset_value: event.target.value,
     });
+    var selects = document.getElementsByClassName("handle_nans_modal_select");
+    var selected_index = event.target.selectedIndex;
+    for (var select of selects) {
+      select.innerHTML = "";
+      for (var dataset of this.props.datasets) {
+        select.options.add(new Option(dataset, dataset));
+      }
+      select.selectedIndex = selected_index;
+      var select_value = select.value;
+      M.FormSelect.init(select);
+    }
     this.createColumnSelect(event.target.value);
   }
 
@@ -269,7 +314,6 @@ export class HandleNansModal extends Component {
     formData.append("substitute", this.state.input_substitute_value);
 
     formData.append("strategy", this.state.select_strategy_value);
-    console.log(this.state.select_numerical_columns_value)
     formData.append("numerical_columns", JSON.stringify(this.state.select_numerical_columns_value));
 
     const requestOptions = {
@@ -277,6 +321,11 @@ export class HandleNansModal extends Component {
       headers: {csrf: csrf},
       body: formData,
     };
+
+    this.setState({
+      count: 0,
+    });
+
     fetch("/api/handle-nans", requestOptions)
     .then((response) => response.json())
     .then((data) => this.props.updateState(data))
@@ -310,15 +359,17 @@ export class HandleNansModal extends Component {
             <h4>Handle Missing Values</h4>
             <div class="divider"></div>
             <div class="row">
-              <div class="col s6" style={{paddingTop: "10vh"}}>
+              <div class="col s6" style={{paddingTop: "7vh"}}>
                 <div class="valign-wrapper modal-valign-wrapper">
                   <div class="card" style={{backgroundColor: "#0f3741"}}>
                     <div class="card-content white-text">
-                      <p style={{fontSize:"12pt"}}>
-                        Select the data <br /><br />
-                        Select the column for which you would like to find missing values <br /> <br />
-                        Check the checkbox if a custom symbol denotes the missing values (not NaN) <br /> <br />
-                        Enter the custom symbol in the textbox
+                      <p style={{fontSize:"12pt"}} id="handle_nans_modal_description">
+                      Handle your missing data by dropping records/variables with missing data. Select the columns
+                      to which this method will be applied and choose to drop rows or columns<br /> <br />
+                      In case the missing data is denoted by a custom symbol (not NaN),
+                      check the appropriate box and enter the custom symbol <br /> <br />
+                      The changes will be applied directly to the dataset. If you would like to create a new dataset,
+                      check the appropriate box and enter the new name
                       </p>
                     </div>
                     <div class="card-action">
@@ -335,11 +386,11 @@ export class HandleNansModal extends Component {
                 </ul>
 
                 <div id="drop">
-                  <div class="row" style={{paddingTop: "12%"}}>
+                  <div class="row" style={{paddingTop: "15%"}}>
 
                     <div class="input-field col s12">
-                      <select class="handle_nans_modal_select" onChange={this.handleSelectChange}></select>
-                      <label>Dataframes:</label>
+                      <select class="handle_nans_modal_select" onChange={this.handleDatasetChange}></select>
+                      <label>Dataframe:</label>
                     </div>
 
                     <div class="input-field col s12 m6">
@@ -387,9 +438,9 @@ export class HandleNansModal extends Component {
                 </div>
 
                 <div id="substitute">
-                  <div class="row" style={{paddingTop: "12%"}}>
+                  <div class="row" style={{paddingTop: "15%"}}>
                     <div class="input-field col s12">
-                      <select class="handle_nans_modal_select" onChange={this.handleSelectChange}></select>
+                      <select class="handle_nans_modal_select" onChange={this.handleDatasetChange}></select>
                       <label>Dataframe:</label>
                     </div>
                     <div class="input-field col s6">
@@ -433,9 +484,9 @@ export class HandleNansModal extends Component {
                 </div>
 
                 <div id="impute">
-                  <div class="row" style={{paddingTop: "12%"}}>
+                  <div class="row" style={{paddingTop: "15%"}}>
                     <div class="input-field col s12">
-                      <select class="handle_nans_modal_select" onChange={this.handleSelectChange}></select>
+                      <select class="handle_nans_modal_select" onChange={this.handleDatasetChange}></select>
                       <label>Dataframe:</label>
                     </div>
 

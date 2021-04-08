@@ -15,7 +15,7 @@ export class DescribeData extends Component {
       select_dataset_value: null,
     }
     this.prepareComponent = this.prepareComponent.bind(this);
-    this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.handleDatasetChange = this.handleDatasetChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
   };
 
@@ -51,7 +51,7 @@ export class DescribeData extends Component {
     M.FormSelect.init(select);
   }
 
-  handleSelectChange(event) {
+  handleDatasetChange(event) {
     this.setState({
       select_dataset_value: event.target.value,
     })
@@ -81,7 +81,7 @@ export class DescribeData extends Component {
             <div class="collapsible-body">
                 <div class="row" style={{paddingTop: "6%", marginBottom:0}}>
                   <div class="input-field col s12" id="describe_data_select_field">
-                    <select id="describe_data_select" onChange={this.handleSelectChange}></select>
+                    <select id="describe_data_select" onChange={this.handleDatasetChange}></select>
                     <label>Dataframes</label>
                   </div>
                 </div>

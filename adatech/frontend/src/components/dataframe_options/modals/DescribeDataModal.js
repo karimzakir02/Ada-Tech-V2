@@ -25,7 +25,7 @@ export class DescribeDataModal extends Component {
     this.prepareComponent = this.prepareComponent.bind(this);
     this.createDatasetSelect = this.createDatasetSelect.bind(this);
     this.createColumnSelect = this.createColumnSelect.bind(this);
-    this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.handleDatasetChange = this.handleDatasetChange.bind(this);
     this.handleColumnSelectChange = this.handleColumnSelectChange.bind(this);
     this.handlePercentilesInputChange = this.handlePercentilesInputChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
@@ -82,7 +82,7 @@ export class DescribeDataModal extends Component {
     M.FormSelect.init(select);
   }
 
-  handleSelectChange(event) {
+  handleDatasetChange(event) {
     this.setState({
       select_dataset_value: event.target.value,
     });
@@ -120,6 +120,9 @@ export class DescribeDataModal extends Component {
       headers: {csrf: csrf},
       body: formData,
     };
+    this.setState({
+      count: 0,
+    });
     fetch("/api/describe-data", requestOptions)
     .then((response) => response.json())
     .then((data) => this.props.updateState(data))
@@ -158,9 +161,9 @@ export class DescribeDataModal extends Component {
                   <div class="card" style={{backgroundColor: "#0f3741"}}>
                     <div class="card-content white-text">
                       <p style={{fontSize:"12pt"}}>
-                        Select the data to describe <br /><br />
-                        Select all of the numerical columns you want to be described <br /> <br />
-                        Enter custom perecentiles you would like to see in your table
+                        Numerically describe your data to understand it better<br /><br />
+                        Select the dataset and which columns you would like to statistically describe. By default, all numeric columns are selected<br /> <br />
+                        You can enter custom percentiles to increase the detail of your analysis and the resulting table
                       </p>
                     </div>
                     <div class="card-action">
@@ -173,7 +176,7 @@ export class DescribeDataModal extends Component {
                 <div class="valign-wrapper modal-valign-wrapper">
                   <div class="row" style={{paddingTop: "25%"}}>
                     <div class="input-field col s12 m6" id="describe_data_modal_select_field">
-                      <select id="describe_data_modal_select" onChange={this.handleSelectChange}></select>
+                      <select id="describe_data_modal_select" onChange={this.handleDatasetChange}></select>
                       <label>Dataframes:</label>
                     </div>
                     <div class="input-field col s12 m6">
@@ -181,7 +184,7 @@ export class DescribeDataModal extends Component {
                       <label>Numeric Columns:</label>
                     </div>
                     <div class="input-field col s12" id="describe_data_modal_input_field">
-                      <input id="describe_data_modal_input" type="text" onChange={this.handlePercentilesInputChange} />
+                      <input placeholder="0.33 0.66"id="describe_data_modal_input" type="text" onChange={this.handlePercentilesInputChange} />
                       <label class="active" for="describe_data_modal_input">Custom Percentiles:</label>
                     </div>
                   </div>
