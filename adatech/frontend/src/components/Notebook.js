@@ -17,6 +17,7 @@ import SetResetIndexModal from "./dataframe_options/modals/SetResetIndexModal"
 import CombineDataModal from "./dataframe_options/modals/CombineDataModal"
 import RenameRowColumnModal from "./dataframe_options/modals/RenameRowColumnModal"
 import RemoveRowsModal from "./dataframe_options/modals/RemoveRowsModal"
+import MainGraphComponent from "./graph_components/MainGraphComponent"
 
 export default class Notebook extends Component {
   constructor(props){
@@ -178,7 +179,7 @@ export default class Notebook extends Component {
                 <input type="file" name="document" onChange={this.uploadFile} />
                 <i class="material-icons">add</i>
               </button>
-              <button style = {{backgroundColor: "#790604", marginTop: "20px"}} class = "btn-floating btn-file btn-large waves-effect waves-light" type = "submit">
+              <button style={{backgroundColor: "#790604", marginTop: "20px"}} class="btn-floating btn-large waves-effect waves-light modal-trigger" href="#data_viz_modal">
                 <i class="material-icons">add_chart</i>
               </button>
             </form>
@@ -201,6 +202,8 @@ export default class Notebook extends Component {
         <RenameRowColumnModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
         <RemoveRowsModal id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
 
+
+        <MainGraphComponent id={this.state.id} datasets={this.state.datasets} updateState={this.updateState} columns={this.state.columns}/>
       </div>
     );
   }
